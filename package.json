@@ -1,0 +1,25 @@
+{
+  "name": "b5500",
+  "description": "Verificação de roteamento entre cidades brasileiras no OpenStreetMap",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "each": "*",
+    "moment": "*",
+    "express": "3.3.5",
+    "jade": "*",
+    "csv": "*",
+    "pg": "*",
+    "db-migrate": "~0.5.4",
+    "orm": "*"
+  },
+  "devDependencies": {
+    "mocha": "~1.12",
+    "mocha-phantomjs": "~3.1.0",
+    "chai": "~1.4",
+    "grunt": "~0.4.1"
+  }
+}
