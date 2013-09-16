@@ -9,8 +9,13 @@ moment.lang('pt');
  */
 
 exports.index = function(req, res){
+  console.log(cities);
   res.render('index', { title: 'B5500', city_connections_depth: 10, city_qty: 0 });
 };
+
+exports.setup = function(req,res) {
+  req.app.get('')
+}
 
 // 
 exports.populate = function(req,res){
@@ -29,9 +34,9 @@ exports.populate = function(req,res){
 
     // the request
     http.get(url, function(response) {
-
+        console.log('request started.');
         var body = '';
-
+        
         response.on('data', function(chunk) {
           body += chunk;
         });
@@ -40,31 +45,9 @@ exports.populate = function(req,res){
             var geojson = JSON.parse(body)
             var db_objects = [];
             
-            each( geojson.elements )
-            .on('item', function(element, index, next) {
-              db_objects.push({
-                id:   element.id,
-                lon:  element.lon,
-                lat:  element.lat,
-                tags: element.tags
-              });
-              next();
-            })
-            .on('error', function(err) {
-              console.log(err.message);
-            })
-            .on('end', function() {
-              // delete all cities
-              req.models.city.all().remove(function(err){
-                if (!err) {
-                  // create cities
-                  req.models.city.create(db_objects, function (err, items) {
-                    if (err)
-                      console.log(err);
-                  });
-                }
-              });
-            });
+            
+            req.models.city.initFromJSON(geojson.elements);
+            // console.log(req.models.city.nearest({lon: -23, lat: -46}));
             
             req.app.set('is_updating_cities', false);
             req.app.set('last_city_update', Date.now());
@@ -75,8 +58,6 @@ exports.populate = function(req,res){
           console.log("Got error: ", e);
     });    
   }
-  
-  console.log((req.app.get('last_city_update') || Date.now()));
   
   res.render('populate', {
     is_updating: req.app.get('is_updating_cities'),

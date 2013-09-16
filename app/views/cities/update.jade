@@ -1,0 +1,16 @@
+extends ../layouts/default
+
+block main
+  h1= Atualização da lista de cidades
+
+block content
+  p O b5500 utiliza as posições das cidades brasileiras no OpenStreetMap para o cálculo de rotas. 
+  p Ao entrar nesta página, é disparado um processo de atualização, que irá executar uma chamada na Overpass API com a seguinte query:
+  p código da query
+  p O resultado da query é comparado com as informações existentes no banco de dados do b5500, e cidades modificadas são atualizadas.
+  p Para evitar sobrecarregar o Overpass, este processo só pode ser disparado a cada dez minutos.
+   
+  if is_updating
+    p No momento há um processo de atualização em andamento. Aguarde alguns minutos para realizar uma nova requisição
+  else
+    p A última atualização ocorreu a #{last_update_string}

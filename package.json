@@ -1,20 +1,23 @@
 {
   "name": "b5500",
   "description": "Verificação de roteamento entre cidades brasileiras no OpenStreetMap",
+  "keywords": ["openstreetmap", "routing", "rotas", "mapas", "maps"],
   "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node app.js"
   },
   "dependencies": {
-    "each": "*",
+    "async": "*",
+    "mongoose": "*",
+    "connect-mongo": "*",
+    "connect-flash": "*",
+    "view-helpers": "*",
+    "underscore": "*",
     "moment": "*",
     "express": "3.3.5",
     "jade": "*",
-    "csv": "*",
-    "pg": "*",
-    "db-migrate": "~0.5.4",
-    "orm": "*"
+    "csv": "*"
   },
   "devDependencies": {
     "mocha": "~1.12",

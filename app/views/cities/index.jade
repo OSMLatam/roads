@@ -1,0 +1,23 @@
+extends ../layouts/default
+
+block main
+  h1= title
+
+block content
+  - if (cities.length)
+    - each city in cities
+      .city
+        h3
+          a(href='/city/'+city._id, title=city.name) #{city.name}
+
+        .meta.muted
+          span= formatDate(article.createdAt)
+          &nbsp; - &nbsp;
+
+    - if (pages > 1)
+      .pagination
+        ul
+          != createPagination(pages, page)
+  - else
+    p.muted No cities.&nbsp;
+      a(href="/atualizar") Atualizar lista
