@@ -19,5 +19,6 @@ block content
         ul
           != createPagination(pages, page)
   - else
-    p.muted No cities.&nbsp;
-      a(href="/atualizar") Atualizar lista
+    p Parece que não há cidades no banco de dados. Visite o 
+      a(href="/inicializacao") página de inicialização
+      .

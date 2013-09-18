@@ -1,11 +1,7 @@
-== Dependencies
-
-* PostGIS;
+## Dependencies
 
 Run `npm install`.
 
-== Database setup
+## Testing
 
-Create a database b5500and run:
-
-    node_modules/db-migrate/bin/db-migrate up -e dev
+Run `mocha`.

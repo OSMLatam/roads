@@ -20,9 +20,9 @@
     "csv": "*"
   },
   "devDependencies": {
-    "mocha": "~1.12",
-    "mocha-phantomjs": "~3.1.0",
-    "chai": "~1.4",
+    "supertest": "*",
+    "should": "latest",
+    "mocha": "latest",
     "grunt": "~0.4.1"
   }
 }

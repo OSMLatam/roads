@@ -4,6 +4,7 @@
  */
 
 var mongoose = require('mongoose')
+  , csv      = require('csv')
   // , Imager = require('imager')
   , env = process.env.NODE_ENV || 'development'
   , config = require('../../config/config')[env]
@@ -31,10 +32,23 @@ var setTags = function (tags) {
  */
 
 var CitySchema = new Schema({
-  name: {type : String, default : '', trim : true},
-  uf: {type : String, default : '', trim : true},
-  lat: {type: Number},
-  lon: {type: Number}
+  ibge: {
+    id: {type: String},
+    lon: {type: Number},
+    lat: {type: Number},
+    uf: {type : String, default : '', trim : true},
+    name: {type : String, default : '', trim : true},
+    is_capital: {type: Boolean, default: false}
+  },
+  osm: {
+    id: {type: String},
+    lon: {type: Number},
+    lat: {type: Number},
+    tags: {
+      k: String,
+      v: String
+    }
+  }
 })
 
 /**
@@ -138,12 +152,35 @@ CitySchema.statics = {
   /**
    * Find city by id
    *
-   * @param {ObjectId} id
+   * @param {String} filename
    * @param {Function} cb
    * @api private
    */
+  reset: function(done) {
+    // remove all
+    csv()
+      .from.path(__dirname+'/../../data/ibge_cities.csv', { columns: true, delimiter: ',', escape: '"' })
+      .on('record', function(row,index){
+        mongoose.model('City', CitySchema)({
+            ibge: {
+              id:         row.id,
+              uf:         row.uf,
+              name:       row.name,
+              lat:        row.lat,
+              lon:        row.lon,
+              is_capital: row.is_capital
+            }          
+        }).save();
+      })
+      .on('end', function(){
+        done();
+      })
+      .on('error', function(error){
+        done(error);
+      });
+  },
 
-  load: function (id, cb) {
+  load: function (filename, cb) {
     this.findOne({ _id : id })
       // .populate('user', 'name email username')
       // .populate('comments.user') 
