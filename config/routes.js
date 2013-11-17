@@ -22,5 +22,7 @@ module.exports = function (app) {
 
   // city routes
   app.get('/cidades', cities.index)
+  app.get('/cidades/:cityId', cities.show)
   app.get('/cidades/popular', cities.populate)
+  app.param('cityId', cities.load)  
 }
