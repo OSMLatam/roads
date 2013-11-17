@@ -4,12 +4,7 @@ body {
 
 .container {
   width: auto;
-  max-width: 680px;
-}
-
-.article, .comment {
-  padding: 15px 0;
-  border-top: 1px solid #e8e8e8;
+  max-width: 800px;
 }
 
 
@@ -20,4 +15,8 @@ body {
 .form-actions {
   background: #fff;
   border: 0;
+}
+
+#colophon {
+  padding: 40px;
 }

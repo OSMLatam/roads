@@ -1,18 +1,17 @@
+
 /**
  * Module dependencies.
  */
 
 var mongoose = require('mongoose')
   , City = mongoose.model('City')
-  // , utils = require('../../lib/utils')
   , _ = require('underscore')
-  
+
 /**
  * Load
  */
 
 exports.load = function(req, res, next, id){
-
   City.load(id, function (err, city) {
     if (err) return next(err)
     if (!city) return next(new Error('not found'))
@@ -38,7 +37,7 @@ exports.index = function(req, res){
     City.count().exec(function (err, count) {
       res.render('cities/index', {
         title: 'Cidades',
-        cities: cities,
+        citys: cities,
         page: page + 1,
         pages: Math.ceil(count / perPage)
       })
@@ -58,12 +57,12 @@ exports.show = function(req, res){
 }
 
 /**
- * Update
+ * Populate cities
  */
 
-exports.update = function(req, res){
-  res.render('cities/update', {
-    city: req.city
-  })
+exports.populate = function(req, res){
+  City.importFromCSV('/../../data/cities.csv',function(err) {
+    if (err) return res.render('500')
+    res.render('home/index')
+  })  
 }
-
