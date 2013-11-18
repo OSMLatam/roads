@@ -1,6 +1,16 @@
 extends ../layouts/default
 
 block main
-  h1= city.name
+  h1= city.fullName()
 
 block content
+
+  - if (city.nearest.length > 0)
+    - each near in city.nearest
+      p
+        a(href='/cidades/'+near.ibge_id, title='Ver esta cidade')=near.fullName()
+  - else
+    p 
+      | Não foram encontradas as cidades próximas, experimente 
+      a(href='/cidades/'+city.ibge_id) atualizar.
+      

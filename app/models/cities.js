@@ -17,10 +17,45 @@ var CitySchema = new Schema({
   name: {type : String, default : '', trim : true, required: true},
   uf: {type: String},  
   isCapital: {type: Boolean, defaut: false},
+  nearest: [{ type: Schema.ObjectId, ref: 'City'}],
   loc: { type: {type: String}, coordinates: []}
 })
 
 CitySchema.index({ loc: '2dsphere' })
+
+/**
+ * Methods
+ */
+
+CitySchema.methods = {
+  getLon: function(){
+    return this.loc.coordinates[0]
+  },
+  getLat: function(){
+    return this.loc.coordinates[1]    
+  },
+  findNearest: function(count, callback) {
+    this.model('City')
+      .find({ loc: { $near: { type: 'Point', coordinates:[this.getLon(), this.getLat()] }}})
+      .limit(count)
+      .skip(1)
+      .exec(function(err, cities){
+        if (err) callback(err)
+        callback(err, cities)
+    })
+  },
+  updateNearest: function(count,doneUpdating) {
+    var self = this
+    self.findNearest(count,function(err,nearest){
+      if (err) callback(err)
+      self.nearest = nearest
+      self.save(doneUpdating)
+    })
+  },
+  fullName: function(){
+    return this.name + ' (' + this.uf + ')'
+  }
+}
 
 /**
  * Statics
@@ -29,7 +64,8 @@ CitySchema.index({ loc: '2dsphere' })
 CitySchema.statics = {
 
   load: function (id, doneLoading) {
-    this.findOne({ _id : id })
+    this
+      .findOne({ _id : id })
       .exec(doneLoading)      
   },
   list: function (options, cb) {

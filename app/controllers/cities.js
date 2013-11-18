@@ -12,9 +12,12 @@ var mongoose = require('mongoose')
  */
 
 exports.load = function(req, res, next, id){
-  City.findOne({ibge_id: id}, function (err, city) {
+  City.findOne({ibge_id: id}).populate('nearest').exec(function (err, city) {
     if (err) return next(err)
     if (!city) return next(new Error('not found'))
+    // fires update if nearests cities not present
+    if (city.nearest.length == 0)
+      city.updateNearest(5)
     req.city = city
     next()
   })
@@ -51,9 +54,8 @@ exports.index = function(req, res){
 
 exports.show = function(req, res){
   res.render('cities/show', {
-    title: req.city.name,
     city: req.city
-  })
+  })        
 }
 
 /**
