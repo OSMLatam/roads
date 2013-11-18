@@ -12,12 +12,12 @@ var mongoose = require('mongoose')
  */
 
 exports.load = function(req, res, next, id){
-  City.findOne({ibge_id: id}).populate('nearest').exec(function (err, city) {
+  City.findOne({ibge_id: id}).populate('connections.to').exec(function (err, city) {
     if (err) return next(err)
     if (!city) return next(new Error('not found'))
     // fires update if nearests cities not present
-    if (city.nearest.length == 0)
-      city.updateNearest(5)
+    if (city.connections.length == 0)
+      city.updateConnections()
     req.city = city
     next()
   })

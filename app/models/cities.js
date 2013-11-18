@@ -7,6 +7,7 @@ var mongoose = require('mongoose')
   , config = require('../../config/config')[env]
   , Schema = mongoose.Schema
   , csv = require('csv')
+  , _ = require('underscore')
 
 /**
  * City Schema
@@ -17,7 +18,12 @@ var CitySchema = new Schema({
   name: {type : String, default : '', trim : true, required: true},
   uf: {type: String},  
   isCapital: {type: Boolean, defaut: false},
-  nearest: [{ type: Schema.ObjectId, ref: 'City'}],
+  connections: [{
+    to: { type: Schema.ObjectId, ref: 'City'},
+    straightDistance: {type: Number, default: 0},
+    routeForwardDistanceRatio: {type: Number, default: 0},
+    routeBackwardDistanceRatio: {type: Number, default: 0}
+  }],
   loc: { type: {type: String}, coordinates: []}
 })
 
@@ -44,12 +50,19 @@ CitySchema.methods = {
         callback(err, cities)
     })
   },
-  updateNearest: function(count,doneUpdating) {
+  updateConnections: function(){
     var self = this
-    self.findNearest(count,function(err,nearest){
-      if (err) callback(err)
-      self.nearest = nearest
-      self.save(doneUpdating)
+    self.findNearest(5, function(err,nearCities){
+      self.connections = []
+      _.each(nearCities, function(nearCity){
+        self.connections.push({
+          to: nearCity,
+          straightDistance: 1.5,
+          routeForwardDistanceRatio: 2,
+          routeBackwardDistanceRatio: 3
+        })
+      })
+      self.save()
     })
   },
   fullName: function(){
