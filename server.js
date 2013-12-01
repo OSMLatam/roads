@@ -11,6 +11,7 @@
 
 var express = require('express')
   , fs = require('fs')
+  , moment = require('moment')
 
 /**
  * Main application entry file.
@@ -43,6 +44,18 @@ require('./config/routes')(app)
 var port = process.env.PORT || 3000
 app.listen(port)
 console.log('Express app started on port '+port)
+
+// Start updating routes
+// var runCityCheck = function() {
+//   // find a city needing a update
+//   mongoose.model('City')
+//     .findOne({isUpdating: false})
+//     .sort({lastUpdate: 1})
+//     .exec(function(err, city){
+//       if (!err) city.updateConnections()
+//   })
+// }
+// setInterval(runCityCheck, 100);  
 
 // expose app
 exports = module.exports = app
