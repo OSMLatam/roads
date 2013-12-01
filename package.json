@@ -33,7 +33,12 @@
     "async": "latest",
     "view-helpers": "latest",
     "forever": "latest",
-    "csv": "latest"
+    "csv": "latest",
+    "request": "latest",
+    "request-json": "latest",
+    "cron": "latest",
+    "moment": "latest",
+    "geolib": "latest"
   },
   "devDependencies": {
     "supertest": "latest",
