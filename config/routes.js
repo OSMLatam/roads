@@ -18,11 +18,13 @@ var home = require('../app/controllers/home')
 module.exports = function (app) {
 
   // home
-  app.get('/', home.index)
+  app.get('/', cities.index)
+
 
   // city routes
   app.get('/cidades', cities.index)
+  app.get('/popular', cities.populate)
   app.get('/cidades/:cityId', cities.show)
-  app.get('/cidades/popular', cities.populate)
   app.param('cityId', cities.load)  
+
 }

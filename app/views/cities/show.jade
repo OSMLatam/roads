@@ -5,16 +5,38 @@ block main
 
 block content
 
-  - if (city.connections.length > 0)
-    - each connection in city.connections
-      p
-        a(href='/cidades/'+connection.to.ibge_id, title='Ver esta cidade')=connection.to.fullName()
-      p
-        | Ida (%)
-        =connection.routeForwardDistanceRatio
-        | Volta (%)
-        =connection.routeBackwardDistanceRatio
-        
+  - if (city.nearCities.length > 0)
+    p 
+      | % de conexão:
+      =city.getConnectivity()
+    table.table
+      thead
+        tr
+          th Cidades Próximas
+          th Distância          
+          th Ida
+          th Volta
+      tbody
+        - each checkedCity in city.nearCities
+          tr
+            td
+              a(href='/cidades/'+checkedCity.id.ibge_id, title='Ver esta cidade')=checkedCity.id.fullName()
+            td
+              =checkedCity.straightDistance / 1000
+              |  km
+            td
+              - if (checkedCity.routeForwardDistanceRatio > 0)
+                =checkedCity.routeForwardDistanceRatio
+                |%
+              - else
+                | Não há conexão!
+            td
+              - if (checkedCity.routeBackwardDistanceRatio > 0)
+                =checkedCity.routeBackwardDistanceRatio
+                |%
+              - else
+                | Não há conexão!                
+
   - else
     p 
       | Não foram encontradas as cidades próximas, experimente 

@@ -7,7 +7,12 @@ var mongoose = require('mongoose')
   , config = require('../../config/config')[env]
   , Schema = mongoose.Schema
   , csv = require('csv')
-  , _ = require('underscore')
+  // , _ = require('underscore')
+  , request = require('request-json')
+  , client = request.newClient(config.osrmUrl)  
+  , async = require('async')
+  , geolib = require('geolib')
+
 
 /**
  * City Schema
@@ -18,14 +23,25 @@ var CitySchema = new Schema({
   name: {type : String, default : '', trim : true, required: true},
   uf: {type: String},  
   isCapital: {type: Boolean, defaut: false},
-  connections: [{
-    to: { type: Schema.ObjectId, ref: 'City'},
+  nearCities: [{
+    id: { type: Schema.ObjectId, ref: 'City'},
     straightDistance: {type: Number, default: 0},
     routeForwardDistanceRatio: {type: Number, default: 0},
     routeBackwardDistanceRatio: {type: Number, default: 0}
   }],
-  loc: { type: {type: String}, coordinates: []}
+  connectionStats: {
+    percentualConnected: { type: Number, default: 0},    
+    totalConnected: { type: Number, default: 0},
+    totalChecked: { type: Number, default: 0}
+  },
+  loc: { type: {type: String}, coordinates: []},
+  lastUpdate: {type: Date, default: '01/01/1980'},
+  isUpdating: {type: Boolean, default: false}
 })
+
+/**
+ * Geo index
+ **/
 
 CitySchema.index({ loc: '2dsphere' })
 
@@ -50,23 +66,123 @@ CitySchema.methods = {
         callback(err, cities)
     })
   },
-  updateConnections: function(){
+  getStraightDistanceTo: function(city){
+    return geolib.getDistance({latitude: this.getLon(), longitude: this.getLat()}, {latitude: city.getLon(), longitude: this.getLat()})
+  },
+  routeTo: function(city_to, callback){
     var self = this
-    self.findNearest(5, function(err,nearCities){
-      self.connections = []
-      _.each(nearCities, function(nearCity){
-        self.connections.push({
-          to: nearCity,
-          straightDistance: 1.5,
-          routeForwardDistanceRatio: 2,
-          routeBackwardDistanceRatio: 3
-        })
+      , query_str = "viaroute?loc="+this.getLat()+","+this.getLon()
+        +"&loc="+city_to.getLat()+","+city_to.getLon()
+        +"&output=json"
+        +"&z=0"        
+
+    client.get(query_str, function(error, response, body) {
+      if (error) callback(error)
+      callback(null, body)
+    })
+  },
+  checkConnectionTo: function(targetCity, doneCheckConnectionTo){
+    var self = this
+    
+   // fetch foward route
+    self.routeTo(targetCity, function(err, routeAB){
+      if (err) doneCheckConnectionTo(err)
+      
+      // fetch backward route
+      targetCity.routeTo(self, function(err, routeBA){
+        if (err) doneCheckConnectionTo(err)
+        
+        // analise route summary
+        straightDistance = self.getStraightDistanceTo(targetCity)
+        routeABDistance = routeAB.route_summary.total_distance
+        routeBADistance = routeBA.route_summary.total_distance              
+        route = {
+          id: targetCity,
+          straightDistance: straightDistance,
+          routeForwardDistanceRatio: routeABDistance / straightDistance * 100,
+          routeBackwardDistanceRatio: routeBADistance / straightDistance * 100                
+        }
+        self.nearCities.push(route)
+        
+        // update connection counter
+        if ((routeABDistance > 0) && (route.routeForwardDistanceRatio <= 150)) {
+          self.connectionStats.totalConnected += 1
+        }
+        if ((routeBADistance > 0) && (route.routeBackwardDistanceRatio <= 150)) {
+          self.connectionStats.totalConnected += 1
+        }
+        self.connectionStats.totalChecked += 2
+        doneCheckConnectionTo()
       })
-      self.save()
+    })
+    
+  },
+  updateConnections: function(cities_qty){
+    var self = this
+    
+    // flag as a updating city and save
+    self.isUpdating = true
+
+    // clear prior information
+    self.nearCities = []
+    self.connectionStats.totalConnected = 0
+    self.connectionStats.totalChecked = 0    
+
+    self.save(function(err){
+      if (err) {
+        console.log(err)
+      } else {
+        
+        // find nearest cities
+        self.findNearest(cities_qty, function(err,nearCities){
+          // check routes
+          async.eachSeries(nearCities, function(nearCity, doneCheckingAConnection){
+              self.checkConnectionTo(nearCity, doneCheckingAConnection)
+            }, function(err){
+              if (err) console.log(err)
+              
+              // update start and save
+              self.connectionStats.percentualConnected = self.connectionStats.totalConnected / self.connectionStats.totalChecked || 0
+              self.isUpdating = false
+              self.lastUpdate = Date.now()
+              self.save()
+          })
+        })
+      }      
     })
   },
   fullName: function(){
     return this.name + ' (' + this.uf + ')'
+  },
+  getConnectivity: function(){
+    return (this.connectionStats.percentualConnected || 0)
+  },
+  getColor: function(){
+    var percentColors = [
+        { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
+        { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
+        { pct: 1.0, color: { r: 0x00, g: 0xff, b: 0 } } ];
+
+    var getColorForPercentage = function(pct) {
+        for (var i = 0; i < percentColors.length; i++) {
+            if (pct <= percentColors[i].pct) {
+                var lower = percentColors[i - 1];
+                var upper = percentColors[i];
+                var range = upper.pct - lower.pct;
+                var rangePct = (pct - lower.pct) / range;
+                var pctLower = 1 - rangePct;
+                var pctUpper = rangePct;
+                var color = {
+                    r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+                    g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+                    b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+                };
+                return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+                // or output as hex if preferred
+            }
+        }
+    }
+    return getColorForPercentage(this.percentualConnected())
   }
 }
 
@@ -83,27 +199,30 @@ CitySchema.statics = {
   },
   list: function (options, cb) {
     var criteria = options.criteria || {}
-    this.find(criteria)
-      .sort(options.sortBy || {'name': 1})
+    this.find(options.criteria)
+      .sort(options.sortBy || {'lastUpdate': -1})
+      .select(options.select)
       .limit(options.perPage)
       .skip(options.perPage * options.page)
       .exec(cb)
   },
   importFromCSV: function(filename, callback) {
     var self = this
+      , City = mongoose.model('City')
     csv()
     .from.path(__dirname+filename, { columns: true, delimiter: ',', escape: '"' })
     .on('record', function(row, index){
-
-      attributes = {
-        name: row.name,
-        ibge_id: row.ibge_id,
-        uf: row.uf,
-        isCapital: row.capital,
-        loc: {type: 'Point', coordinates: [new Number(row.lon),new Number(row.lat)]}
-      }
-
-      self.update({ibge_id: row.ibge_id},{$set: attributes},{upsert: true})
+      City.findOne({ibge_id: row.ibge_id}, function(err, city){
+        if (err) doneSavingAFinancing(err)
+        if (!city) {
+          city = new City({ibge_id: row.ibge_id})
+        }
+        city.name = row.name
+        city.uf = row.uf
+        city.isCapital = row.capital        
+        city.loc = {type: 'Point', coordinates: [new Number(row.lon),new Number(row.lat)]}
+        city.save()
+      })
     })
     .on('end', function(count){
       callback()
