@@ -56,17 +56,7 @@ CitySchema.methods = {
   getLat: function(){
     return this.loc.coordinates[1]    
   },
-  findNearest: function(count, callback) {
-    this.model('City')
-      .find({ loc: { $near: { type: 'Point', coordinates:[this.getLon(), this.getLat()] }}})
-      .limit(count)
-      .skip(1)
-      .exec(function(err, cities){
-        if (err) callback(err)
-        callback(err, cities)
-    })
-  },
-  findNearestX: function(limit, callback){
+  findNearest: function(limit, callback){
     var City = mongoose.model('City')
     
     this.model('City').collection
@@ -161,7 +151,7 @@ CitySchema.methods = {
         console.log(err)
       } else {
         // find nearest cities
-        self.findNearestX(cities_qty, function(err,nearCities){
+        self.findNearest(cities_qty, function(err,nearCities){
           // check routes
           async.eachSeries(nearCities, function(nearCity, doneCheckingAConnection){
               self.checkConnectionTo(nearCity.obj,nearCity.dis,doneCheckingAConnection)
