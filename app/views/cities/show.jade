@@ -22,20 +22,22 @@ block content
             td
               a(href='/cidades/'+checkedCity.id.ibge_id, title='Ver esta cidade')=checkedCity.id.fullName()
             td
-              =checkedCity.straightDistance / 1000
+              =checkedCity.straightDistance
               |  km
             td
-              - if (checkedCity.routeForwardDistanceRatio > 0)
-                =checkedCity.routeForwardDistanceRatio
-                |%
-              - else
-                | Não há conexão!
+              a(href=city.getViewInOSRMLink(checkedCity.id))            
+                - if (checkedCity.routeForwardDistanceRatio > 0)
+                    =checkedCity.routeForwardDistanceRatio
+                    |%
+                - else
+                  | Não há conexão!
             td
-              - if (checkedCity.routeBackwardDistanceRatio > 0)
-                =checkedCity.routeBackwardDistanceRatio
-                |%
-              - else
-                | Não há conexão!                
+              a(href=checkedCity.id.getViewInOSRMLink(city))
+                - if (checkedCity.routeBackwardDistanceRatio > 0)
+                    =checkedCity.routeBackwardDistanceRatio
+                    |%
+                - else
+                  | Não há conexão!                
 
   - else
     p 

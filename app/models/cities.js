@@ -7,7 +7,7 @@ var mongoose = require('mongoose')
   , config = require('../../config/config')[env]
   , Schema = mongoose.Schema
   , csv = require('csv')
-  // , _ = require('underscore')
+  , _ = require('underscore')
   , request = require('request-json')
   , client = request.newClient(config.osrmUrl)  
   , async = require('async')
@@ -66,8 +66,34 @@ CitySchema.methods = {
         callback(err, cities)
     })
   },
+  findNearestX: function(limit, callback){
+    var City = mongoose.model('City')
+    
+    this.model('City').collection
+      .geoNear(this.getLon(), this.getLat(), {spherical: true, num: limit + 1, distanceMultiplier: 6371}, function(err, cities){
+        if (err) callback(err)
+
+        // remove first element
+        cities.results.shift()
+
+        // City model should be reconstruted because of geoNear possible bug
+        _.map(cities.results, function(result){
+          result.dis = parseFloat(result.dis.toFixed(1));
+          result.obj = new City(result.obj)
+        })
+
+        callback({},cities.results)
+    })    
+  },
   getStraightDistanceTo: function(city){
     return geolib.getDistance({latitude: this.getLon(), longitude: this.getLat()}, {latitude: city.getLon(), longitude: this.getLat()})
+  },
+  getViewInOSRMLink: function(city_to){
+    return "http://map.project-osrm.org/?loc="+this.getLat()+","+this.getLon()
+      +"&loc="+city_to.loc.coordinates[1]+","+city_to.loc.coordinates[0]
+      +"&output=json"
+      +"&z=0"
+      +"&hl=pt"
   },
   routeTo: function(city_to, callback){
     var self = this
@@ -81,28 +107,31 @@ CitySchema.methods = {
       callback(null, body)
     })
   },
-  checkConnectionTo: function(targetCity, doneCheckConnectionTo){
+  checkConnectionTo: function(targetCity, straightDistance, doneCheckConnectionTo){
     var self = this
-    
+
    // fetch foward route
     self.routeTo(targetCity, function(err, routeAB){
       if (err) doneCheckConnectionTo(err)
-      
+
       // fetch backward route
       targetCity.routeTo(self, function(err, routeBA){
         if (err) doneCheckConnectionTo(err)
         
-        // analise route summary
-        straightDistance = self.getStraightDistanceTo(targetCity)
-        routeABDistance = routeAB.route_summary.total_distance
-        routeBADistance = routeBA.route_summary.total_distance              
+        // get route distances
+        routeABDistance = routeAB.route_summary.total_distance / 1000
+        routeBADistance = routeBA.route_summary.total_distance / 1000
+        
+                
         route = {
           id: targetCity,
           straightDistance: straightDistance,
-          routeForwardDistanceRatio: routeABDistance / straightDistance * 100,
-          routeBackwardDistanceRatio: routeBADistance / straightDistance * 100                
+          routeForwardDistanceRatio: routeABDistance > 0 ? (routeABDistance / straightDistance - 1) * 100 : 0,
+          routeBackwardDistanceRatio: routeABDistance > 0 ? (routeBADistance / straightDistance - 1) * 100 : 0
         }
         self.nearCities.push(route)
+        
+        console.log(route)
         
         // update connection counter
         if ((routeABDistance > 0) && (route.routeForwardDistanceRatio <= 150)) {
@@ -127,17 +156,15 @@ CitySchema.methods = {
     self.nearCities = []
     self.connectionStats.totalConnected = 0
     self.connectionStats.totalChecked = 0    
-
     self.save(function(err){
       if (err) {
         console.log(err)
       } else {
-        
         // find nearest cities
-        self.findNearest(cities_qty, function(err,nearCities){
+        self.findNearestX(cities_qty, function(err,nearCities){
           // check routes
           async.eachSeries(nearCities, function(nearCity, doneCheckingAConnection){
-              self.checkConnectionTo(nearCity, doneCheckingAConnection)
+              self.checkConnectionTo(nearCity.obj,nearCity.dis,doneCheckingAConnection)
             }, function(err){
               if (err) console.log(err)
               
