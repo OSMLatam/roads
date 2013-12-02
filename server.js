@@ -46,16 +46,17 @@ app.listen(port)
 console.log('Express app started on port '+port)
 
 // Start updating routes
-// var runCityCheck = function() {
-//   // find a city needing a update
-//   mongoose.model('City')
-//     .findOne({isUpdating: false})
-//     .sort({lastUpdate: 1})
-//     .exec(function(err, city){
-//       if (!err) city.updateConnections()
-//   })
-// }
-// setInterval(runCityCheck, 100);  
+var runCityCheck = function() {
+  // find a city needing a update
+  mongoose.model('City')
+    .findOne({isUpdating: false})
+    .sort({lastUpdate: 1})
+    .exec(function(err, city){
+      console.log(city.name)
+      if (!err) city.updateConnections(5)
+  })
+}
+// setInterval(runCityCheck, 1000);  
 
 // expose app
 exports = module.exports = app
