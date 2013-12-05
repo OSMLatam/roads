@@ -3,12 +3,34 @@ extends ../layouts/default
 block head
 
 block main
-  h2.text-center b5500
+  - if (!cities)
+    .alert.alert-info
+      | Primeira vez rodando esta plataforma? Acesse este 
+      b
+        a(href='/install') link
+      |  para carregar informações iniciais.
+
+  h2 Caminhos no Mapa
 
 block content
+
+    h3
+      | Ligue os pontos e ajude a mapear os caminhos entre as cidades brasileiras no OpenStreetMap, o maior mapa aberto do mundo. 
+    p
+      | Aqui você pode ver se a sua cidade está conectada corretamente às vizinhas, e assim garantir a roteabilidade do mapa.
+    p
+      | O diagrama abaixo representa o quão conectada cada cidade brasileira está. A taxa de cada cidade é calculada dividindo o número de caminhos mapeados pelos número de caminhos verificados. Os caminhos excessivamente tortuosos, mais longos do que metade da distância direta entre uma cidade e outra são considerados inválidos.
+    p 
+      | Se a sua cidade possui problemas de conexão, crie uma conta no OpenStreetMap e conserte o mapa você mesmo. O wiki, lista de discussão talk-br e fórum do OSM são bons lugares para tirar dúvidas.
+    p
+      | Se você quer reportar um bug ou fazer sugestões sobre esta plataforma, visite: https://github.com/vgeorge/caminhos/issues
+    
+
   - if (cities)
     p
-      a(type='button', class='btn-sm btn-primary', href='/cidades/popular', title='Popular banco de dados') Não há dados, popular agora!
+      | Primeira vez rodando esta plataforma? Acesse este 
+      a(href='/install') link 
+      | para carregar informações iniciais.
   - else
     p
       | Conectadas:     

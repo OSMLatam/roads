@@ -18,7 +18,7 @@ var home = require('../app/controllers/home')
 module.exports = function (app) {
 
   // home
-  app.get('/', cities.index)
+  app.get('/', home.index)
 
 
   // city routes

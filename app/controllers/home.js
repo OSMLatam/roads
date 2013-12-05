@@ -13,12 +13,14 @@ var mongoose = require('mongoose')
 
 exports.index = function(req, res){
   var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
-  var perPage = 30
+  var perPage = 10
   var options = {
+    select: 'ibge_id name uf connectionStats.totalConnected connectionStats.totalChecked connectionStats.percentualConnected',
+    sortBy: {'connectionStats.percentualConnected': -1},
     perPage: perPage,
     page: page
   }
-
+  
   City.list(options, function(err, cities) {
     if (err) return res.render('500')
     City.count().exec(function (err, count) {
@@ -28,5 +30,5 @@ exports.index = function(req, res){
         pages: Math.ceil(count / perPage)
       })
     })
-  })  
+  })
 }
