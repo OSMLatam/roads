@@ -29,13 +29,16 @@ var CitySchema = new Schema({
     routeForwardDistanceRatio: {type: Number, default: 0},
     routeBackwardDistanceRatio: {type: Number, default: 0}
   }],
-  connectionStats: {
+  stats: {
     percentualConnected: { type: Number, default: 0},    
     totalConnected: { type: Number, default: 0},
+    totalTortuous: { type: Number, default: 0},
+    totalInexistent: { type: Number, default: 0},        
     totalChecked: { type: Number, default: 0}
   },
   loc: { type: {type: String}, coordinates: []},
-  lastUpdate: {type: Date, default: '01/01/1980'},
+  updatedAt: {type: Date},
+  shouldUpdate: {type: Boolean, default: true},
   isUpdating: {type: Boolean, default: false}
 })
 
@@ -50,31 +53,27 @@ CitySchema.index({ loc: '2dsphere' })
  */
 
 CitySchema.methods = {
+  needsUpdate: function(){
+    this.shouldUpdate = true
+    this.save()
+  },
   getLon: function(){
     return this.loc.coordinates[0]
   },
   getLat: function(){
     return this.loc.coordinates[1]    
   },
-  findNearest: function(limit, callback){
-    var City = mongoose.model('City')
-    
-    this.model('City').collection
-      .geoNear(this.getLon(), this.getLat(), {spherical: true, num: limit + 1, distanceMultiplier: 6371}, function(err, cities){
-        if (err) callback(err)
-
-        // remove first element
-        cities.results.shift()
-
-        // City model should be reconstruted because of geoNear possible bug
-        _.map(cities.results, function(result){
-          result.dis = parseFloat(result.dis.toFixed(1));
-          result.obj = new City(result.obj)
-        })
-
-        callback({},cities.results)
-    })    
+  getPercentualConnected: function(){
+    console.log(this)
+    return this.stats.totalConnected / this.stats.totalChecked * 100
   },
+  getPercentualTortuous: function(){
+    return this.stats.totalTortuous / this.stats.totalChecked * 100
+  },
+  getPercentualInexistent: function(){
+    return this.stats.totalInexistent / this.stats.totalChecked * 100
+  },  
+
   getStraightDistanceTo: function(city){
     return geolib.getDistance({latitude: this.getLon(), longitude: this.getLat()}, {latitude: city.getLon(), longitude: this.getLat()})
   },
@@ -121,20 +120,31 @@ CitySchema.methods = {
         }
         self.nearCities.push(route)
         
-        console.log(route)
+        // update connection counter
+        if (route.routeForwardDistanceRatio >= 50) {
+          self.stats.totalTortuous += 1
+        } else if (route.routeForwardDistanceRatio > 0 && route.routeForwardDistanceRatio < 50) 
+          self.stats.totalConnected += 1
+        else {  
+          self.stats.totalInexistent += 1          
+        }
         
         // update connection counter
-        if ((routeABDistance > 0) && (route.routeForwardDistanceRatio <= 150)) {
-          self.connectionStats.totalConnected += 1
+        if (route.routeBackwardDistanceRatio >= 50) {
+          self.stats.totalTortuous += 1
+        } else if (route.routeBackwardDistanceRatio > 0 && route.routeBackwardDistanceRatio < 50) {
+          self.stats.totalConnected += 1
+        } else {  
+          self.stats.totalInexistent += 1          
         }
-        if ((routeBADistance > 0) && (route.routeBackwardDistanceRatio <= 150)) {
-          self.connectionStats.totalConnected += 1
-        }
-        self.connectionStats.totalChecked += 2
+        
+        self.stats.totalChecked += 2
+
+        console.log(self.stats)
+
         doneCheckConnectionTo()
       })
     })
-    
   },
   updateConnections: function(cities_qty){
     var self = this
@@ -144,8 +154,10 @@ CitySchema.methods = {
 
     // clear prior information
     self.nearCities = []
-    self.connectionStats.totalConnected = 0
-    self.connectionStats.totalChecked = 0    
+    self.stats.totalConnected = 0
+    self.stats.totalTortuous = 0        
+    self.stats.totalInexistent = 0
+    self.stats.totalChecked = 0    
     self.save(function(err){
       if (err) {
         console.log(err)
@@ -159,9 +171,10 @@ CitySchema.methods = {
               if (err) console.log(err)
               
               // update start and save
-              self.connectionStats.percentualConnected = self.connectionStats.totalConnected / self.connectionStats.totalChecked || 0
+              self.stats.percentualConnected = self.stats.totalConnected / self.stats.totalChecked || 0
               self.isUpdating = false
-              self.lastUpdate = Date.now()
+              self.shouldUpdate = false
+              self.updatedAt = Date.now()
               self.save()
           })
         })
@@ -172,7 +185,7 @@ CitySchema.methods = {
     return this.name + ' (' + this.uf + ')'
   },
   getConnectivity: function(){
-    return (this.connectionStats.percentualConnected || 0)
+    return (this.stats.percentualConnected || 0)
   },
   getColor: function(){
     var percentColors = [
@@ -200,6 +213,25 @@ CitySchema.methods = {
         }
     }
     return getColorForPercentage(this.percentualConnected())
+  },
+  findNearest: function(limit, callback){
+    var City = mongoose.model('City')
+    
+    this.model('City').collection
+      .geoNear(this.getLon(), this.getLat(), {spherical: true, num: limit + 1, distanceMultiplier: 6371}, function(err, cities){
+        if (err) callback(err)
+
+        // remove first element
+        cities.results.shift()
+
+        // City model should be reconstruted because of geoNear possible bug
+        _.map(cities.results, function(result){
+          result.dis = parseFloat(result.dis.toFixed(1));
+          result.obj = new City(result.obj)
+        })
+
+        callback({},cities.results)
+    })    
   }
 }
 
@@ -217,7 +249,7 @@ CitySchema.statics = {
   list: function (options, cb) {
     var criteria = options.criteria || {}
     this.find(options.criteria)
-      .sort(options.sortBy || {'lastUpdate': -1})
+      .sort(options.sortBy || {'updatedAt': -1})
       .select(options.select)
       .limit(options.perPage)
       .skip(options.perPage * options.page)

@@ -71,3 +71,11 @@ exports.populate = function(req, res){
   })  
 }
 
+/**
+ * Update city
+ */
+
+exports.update = function(req, res){
+  req.city.needsUpdate()
+  res.redirect('/cidades/'+req.city.ibge_id)
+}
