@@ -40,6 +40,12 @@ require('./config/express')(app, config)
 // Bootstrap routes
 require('./config/routes')(app)
 
+// Expose moment.js as local
+moment.lang('pt')
+app.locals.fromNow = function(date) {
+  return moment(date).fromNow()
+}
+
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
 app.listen(port)
@@ -49,14 +55,17 @@ console.log('Express app started on port '+port)
 var runCityCheck = function() {
   // find a city needing a update
   mongoose.model('City')
-    .findOne({isUpdating: false})
+    .findOne({shouldUpdate: true})
     .sort({lastUpdate: 1})
     .exec(function(err, city){
-      console.log(city.name)
-      if (!err) city.updateConnections(5)
+      if (err) console.log('error finding cities to update')
+      if (city) {
+        console.log('vai atualizar: '+city.fullName())
+        city.updateConnections(5)
+      }
   })
 }
-// setInterval(runCityCheck, 1000);  
+setInterval(runCityCheck, 1000);  
 
 // expose app
 exports = module.exports = app
