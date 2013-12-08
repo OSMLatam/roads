@@ -25,6 +25,7 @@ module.exports = function (app) {
   app.get('/cidades', cities.index)
   app.get('/popular', cities.populate)
   app.get('/cidades/:cityId', cities.show)
+  app.get('/cidades/:cityId/atualizar', cities.update)  
   app.param('cityId', cities.load)  
 
 }
