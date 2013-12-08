@@ -9,29 +9,14 @@ block main
       b
         a(href='/install') link
       |  para carregar informações iniciais.
-
-  h2 Caminhos no Mapa
-
 block content
-
-    h3
-      | Ligue os pontos e ajude a mapear os caminhos entre as cidades brasileiras no OpenStreetMap, o maior mapa aberto do mundo. 
-    p
-      | Aqui você pode ver se a sua cidade está conectada corretamente às vizinhas, e assim garantir a roteabilidade do mapa.
-    p
-      | O diagrama abaixo representa o quão conectada cada cidade brasileira está. A taxa de cada cidade é calculada dividindo o número de caminhos mapeados pelos número de caminhos verificados. Os caminhos excessivamente tortuosos, mais longos do que metade da distância direta entre uma cidade e outra são considerados inválidos.
-    p 
-      | Se a sua cidade possui problemas de conexão, crie uma conta no OpenStreetMap e conserte o mapa você mesmo. O wiki, lista de discussão talk-br e fórum do OSM são bons lugares para tirar dúvidas.
-    p
-      | Se você quer reportar um bug ou fazer sugestões sobre esta plataforma, visite: https://github.com/vgeorge/caminhos/issues
-    
+  .jumbotron
+    h1 Ligue os pontos
+    p Ajude a mapear os caminhos do Brasil. Este projeto monitora automaticamente conexões entre as cidades brasileiras, mostrando locais sem conexão ou que tem rotas tortuosas.
+    p Conheça a metodologia e o código-fonte por trás projeto.
 
   - if (cities)
     p
-      | Primeira vez rodando esta plataforma? Acesse este 
-      a(href='/install') link 
-      | para carregar informações iniciais.
-  - else
     p
       | Conectadas:     
       - each city in cities
