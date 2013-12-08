@@ -1,16 +1,21 @@
 extends ../layouts/default
 
 block main
+  - if (city.shouldUpdate) 
+    - info = ['Esta cidade está marcada para atualização, aguarde alguns instantes e recarregue.']
+
+block content
+
   h1.text-center
     | Município de 
     =city.fullName()
 
-block content
-
-  p.text-center
-    | Atualizado 4 horas atrás
   row
   - if (city.nearCities.length > 0)
+    p.text-center
+      | Atualizado 
+      =locals.fromNow(city.updatedAt)
+  
     table.table
       thead
         tr
@@ -51,17 +56,29 @@ block content
               td.text-center.danger
                 a(href=city.getViewInOSRMLink(checkedCity.id))              
                   | inexistente
-    h3.text-center Situação atual
+    h3.text-center Situação atual 
+    - console.log(city.stats)
     .progress
-      .progress-bar.progress-bar-success(role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%")
+      .progress-bar.progress-bar-success(role="progressbar" aria-valuenow=city.getPercentualConnected() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualConnected()+"%")
         .sr-only
-          40% Complete (success)
+          =city.getPercentualConnected()
+          | % Conectado (success)
+      .progress-bar.progress-bar-warning(role="progressbar" aria-valuenow=city.getPercentualTortuous() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualTortuous()+"%")
+        .sr-only
+          =city.getPercentualTortuous()
+          | % Tortuoso
+      .progress-bar.progress-bar-danger(role="progressbar" aria-valuenow=city.getPercentualInexistent() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualInexistent()+"%")
+        .sr-only
+          =city.getPercentualInexistent()
+          | % Inesistente
+           
 
 
   - else
-    p 
-      | Não foram encontradas as cidades próximas, experimente 
-      a(href='/cidades/'+city.ibge_id) atualizar.
+    row
+      p.text-center
+        | Não foram encontradas as cidades próximas, experimente 
+        a(href='/cidades/'+city.ibge_id) atualizar.
   row
     a(class="btn btn-primary" type="button" href="/cidades/"+city.ibge_id+"/atualizar")
       | Atualizar
