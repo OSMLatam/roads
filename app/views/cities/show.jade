@@ -1,46 +1,68 @@
 extends ../layouts/default
 
 block main
-  h1= city.fullName()
+  h1.text-center
+    | Município de 
+    =city.fullName()
 
 block content
 
+  p.text-center
+    | Atualizado 4 horas atrás
+  row
   - if (city.nearCities.length > 0)
-    p 
-      | % de conexão:
-      =city.getConnectivity()
     table.table
       thead
         tr
-          th Cidades Próximas
-          th Distância          
-          th Ida
-          th Volta
+          th.text-center 
+            h3 Caminho a
+          th.text-center 
+            h3 Ida
+          th.text-center 
+            h3 Volta
       tbody
         - each checkedCity in city.nearCities
-          tr
-            td
+         tr
+            td.text-center
               a(href='/cidades/'+checkedCity.id.ibge_id, title='Ver esta cidade')=checkedCity.id.fullName()
-            td
-              =checkedCity.straightDistance
-              |  km
-            td
-              a(href=city.getViewInOSRMLink(checkedCity.id))            
-                - if (checkedCity.routeForwardDistanceRatio > 0)
-                    =checkedCity.routeForwardDistanceRatio
-                    |%
-                - else
-                  | Não há conexão!
-            td
-              a(href=checkedCity.id.getViewInOSRMLink(city))
-                - if (checkedCity.routeBackwardDistanceRatio > 0)
-                    =checkedCity.routeBackwardDistanceRatio
-                    |%
-                - else
-                  | Não há conexão!                
+
+            - if (checkedCity.routeForwardDistanceRatio > 50)
+              td.text-center.warning
+                a(href=checkedCity.id.getViewInOSRMLink(city))
+                  | tortuoso
+            - else if (checkedCity.routeForwardDistanceRatio > 0)
+              td.text-center.success
+                a(href=checkedCity.id.getViewInOSRMLink(city))
+                  | conectado
+            - else 
+              td.text-center.danger
+                a(href=city.getViewInOSRMLink(checkedCity.id))                            
+                  | inexistente
+
+            - if (checkedCity.routeBackwardDistanceRatio > 50)
+              td.text-center.warning
+                a(href=city.getViewInOSRMLink(checkedCity.id))
+                  | tortuoso
+            - else if (checkedCity.routeBackwardDistanceRatio > 0)
+              td.text-center.success
+                a(href=city.getViewInOSRMLink(checkedCity.id))
+                  | conectado
+            - else 
+              td.text-center.danger
+                a(href=city.getViewInOSRMLink(checkedCity.id))              
+                  | inexistente
+    h3.text-center Situação atual
+    .progress
+      .progress-bar.progress-bar-success(role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%")
+        .sr-only
+          40% Complete (success)
+
 
   - else
     p 
       | Não foram encontradas as cidades próximas, experimente 
       a(href='/cidades/'+city.ibge_id) atualizar.
+  row
+    a(class="btn btn-primary" type="button" href="/cidades/"+city.ibge_id+"/atualizar")
+      | Atualizar
       
