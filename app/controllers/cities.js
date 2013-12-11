@@ -29,24 +29,29 @@ exports.load = function(req, res, next, id){
 
 exports.index = function(req, res){
   var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
-  var perPage = 1000
+  var perPage = 6000
   var options = {
-    select: 'ibge_id name uf connectionStats.totalConnected connectionStats.totalChecked connectionStats.percentualConnected',
-    sortBy: {'connectionStats.percentualConnected': -1},
+    select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
+    sortBy: {'stats.percentualConnected': -1},
     perPage: perPage,
     page: page
   }
   
-  City.list(options, function(err, cities) {
+  City.count().exec(function (err, count) {
     if (err) return res.render('500')
-    City.count().exec(function (err, count) {
-      res.render('cities/index', {
-        cities: cities,
-        page: page + 1,
-        pages: Math.ceil(count / perPage)
+    if (count == 0) {
+      res.redirect('/')
+    } else {
+      City.list(options, function(err, cities) {
+        if (err) return res.render('500')
+          res.render('cities/index', {
+            cities: cities,
+            page: page + 1,
+            pages: Math.ceil(count / perPage)
+        })
       })
-    })
-  })  
+    }
+  })
 }
 
 /**

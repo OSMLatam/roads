@@ -2,31 +2,14 @@ extends ../layouts/default
 
 block main
 
-  h1.text-center b5500
-  p.text-center caixa de busca
-
 block content
-  - if (cities.length == 0)
-    p
-      a(type='button', class='btn-sm btn-primary', href='/popular', title='Popular banco de dados') Não há dados, popular agora!
-  - else
-    // div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())
-    // div(id='citiesMosaic')
-    table.table
-      thead
-        tr
-          th Cidade
-          th Existentes
-          th Verificadas
-          th %
-      - each city in cities
-          tbody
-            tr
-              td
-                a(href='/cidades/'+city.ibge_id)=city.fullName()
-              td
-                =city.connectionStats.totalConnected
-              td
-                =city.connectionStats.totalChecked                
-              td
-                =city.getConnectivity()
+
+  h2 Diagrama do estado do mapa
+
+  - if (typeof(cities) == 'undefined') 
+    p Não há cidades!!
+    
+
+  - if (cities) 
+    - each city in cities
+      div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())      

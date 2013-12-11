@@ -64,18 +64,23 @@ CitySchema.methods = {
     return this.loc.coordinates[1]    
   },
   getPercentualConnected: function(){
-    console.log(this)
-    return this.stats.totalConnected / this.stats.totalChecked * 100
+    return (this.stats.totalConnected / this.stats.totalChecked * 100 | 0)
   },
   getPercentualTortuous: function(){
     return this.stats.totalTortuous / this.stats.totalChecked * 100
   },
   getPercentualInexistent: function(){
     return this.stats.totalInexistent / this.stats.totalChecked * 100
-  },  
-
+  },    
   getStraightDistanceTo: function(city){
-    return geolib.getDistance({latitude: this.getLon(), longitude: this.getLat()}, {latitude: city.getLon(), longitude: this.getLat()})
+    return geolib.getDistance({
+      latitude: this.getLon(), 
+      longitude: this.getLat()
+    }, {
+      latitude: 
+      city.getLon(), 
+      longitude: this.getLat()
+    })
   },
   getViewInOSRMLink: function(city_to){
     return "http://map.project-osrm.org/?loc="+this.getLat()+","+this.getLon()
@@ -140,8 +145,6 @@ CitySchema.methods = {
         
         self.stats.totalChecked += 2
 
-        console.log(self.stats)
-
         doneCheckConnectionTo()
       })
     })
@@ -189,30 +192,33 @@ CitySchema.methods = {
   },
   getColor: function(){
     var percentColors = [
-        { pct: 0.0, color: { r: 0xff, g: 0x00, b: 0 } },
+        { pct: 0, color: { r: 0xff, g: 0x00, b: 0 } },
         { pct: 0.5, color: { r: 0xff, g: 0xff, b: 0 } },
         { pct: 1.0, color: { r: 0x00, g: 0xff, b: 0 } } ];
 
     var getColorForPercentage = function(pct) {
         for (var i = 0; i < percentColors.length; i++) {
-            if (pct <= percentColors[i].pct) {
-                var lower = percentColors[i - 1];
-                var upper = percentColors[i];
-                var range = upper.pct - lower.pct;
-                var rangePct = (pct - lower.pct) / range;
-                var pctLower = 1 - rangePct;
-                var pctUpper = rangePct;
-                var color = {
-                    r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
-                    g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
-                    b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
-                };
-                return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
-                // or output as hex if preferred
-            }
+          if (pct == 0) {
+              return 'rgb(255, 0, 0)'            
+          } else if (pct <= percentColors[i].pct) {
+              var lower = percentColors[i - 1];
+              var upper = percentColors[i];
+              var range = upper.pct - lower.pct;
+              var rangePct = (pct - lower.pct) / range;
+              var pctLower = 1 - rangePct;
+              var pctUpper = rangePct;
+              var color = {
+                  r: Math.floor(lower.color.r * pctLower + upper.color.r * pctUpper),
+                  g: Math.floor(lower.color.g * pctLower + upper.color.g * pctUpper),
+                  b: Math.floor(lower.color.b * pctLower + upper.color.b * pctUpper)
+              };
+              return 'rgb(' + [color.r, color.g, color.b].join(',') + ')';
+              // or output as hex if preferred
+          }
         }
     }
-    return getColorForPercentage(this.percentualConnected())
+    console.log(this.getPercentualConnected()/100)
+    return getColorForPercentage(this.getPercentualConnected()/100)
   },
   findNearest: function(limit, callback){
     var City = mongoose.model('City')
