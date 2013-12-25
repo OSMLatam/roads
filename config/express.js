@@ -9,7 +9,7 @@ var express = require('express')
   , helpers = require('view-helpers')
   , pkg = require('../package.json')
 
-module.exports = function (app, config) {
+module.exports = function (app, config, passport) {
 
   app.set('showStackError', true)
 
@@ -44,7 +44,8 @@ module.exports = function (app, config) {
     app.use(express.cookieParser())
 
     // bodyParser should be above methodOverride
-    app.use(express.bodyParser())
+    app.use(express.json());
+    app.use(express.urlencoded());
     app.use(express.methodOverride())
 
     // express/mongo session storage
@@ -65,13 +66,13 @@ module.exports = function (app, config) {
     // adds CSRF support
     if (process.env.NODE_ENV !== 'test') {
       app.use(express.csrf())
-    }
 
-    // This could be moved to view-helpers :-)
-    app.use(function(req, res, next){
-      res.locals.csrf_token = req.session._csrf
-      next()
-    })
+      // This could be moved to view-helpers :-)
+      app.use(function(req, res, next){
+        res.locals.csrf_token = req.csrfToken()
+        next()
+      })
+    }
 
     // routes should be at the last
     app.use(app.router)

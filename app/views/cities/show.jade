@@ -1,0 +1,85 @@
+extends ../layouts/default
+
+block main
+  - if (city.shouldUpdate) 
+    - info = ['Esta cidade está marcada para atualização, aguarde alguns instantes e recarregue.']
+
+block content
+
+  h1.text-center
+    | Município de 
+    =city.fullName()
+
+  row
+  - if (city.nearCities.length > 0)
+    p.text-center
+      | Atualizado 
+      =locals.fromNow(city.updatedAt)
+  
+    table.table
+      thead
+        tr
+          th.text-center 
+            h3 Caminho a
+          th.text-center 
+            h3 Ida
+          th.text-center 
+            h3 Volta
+      tbody
+        - each checkedCity in city.nearCities
+         tr
+            td.text-center
+              a(href='/cidades/'+checkedCity.id.ibge_id, title='Ver esta cidade')=checkedCity.id.fullName()
+
+            - if (checkedCity.routeForwardDistanceRatio > 50)
+              td.text-center.warning
+                a(href=checkedCity.id.getViewInOSRMLink(city))
+                  | tortuoso
+            - else if (checkedCity.routeForwardDistanceRatio > 0)
+              td.text-center.success
+                a(href=checkedCity.id.getViewInOSRMLink(city))
+                  | conectado
+            - else 
+              td.text-center.danger
+                a(href=city.getViewInOSRMLink(checkedCity.id))                            
+                  | inexistente
+
+            - if (checkedCity.routeBackwardDistanceRatio > 50)
+              td.text-center.warning
+                a(href=city.getViewInOSRMLink(checkedCity.id))
+                  | tortuoso
+            - else if (checkedCity.routeBackwardDistanceRatio > 0)
+              td.text-center.success
+                a(href=city.getViewInOSRMLink(checkedCity.id))
+                  | conectado
+            - else 
+              td.text-center.danger
+                a(href=city.getViewInOSRMLink(checkedCity.id))              
+                  | inexistente
+    h3.text-center Situação atual 
+    - console.log(city.stats)
+    .progress
+      .progress-bar.progress-bar-success(role="progressbar" aria-valuenow=city.getPercentualConnected() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualConnected()+"%")
+        .sr-only
+          =city.getPercentualConnected()
+          | % Conectado (success)
+      .progress-bar.progress-bar-warning(role="progressbar" aria-valuenow=city.getPercentualTortuous() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualTortuous()+"%")
+        .sr-only
+          =city.getPercentualTortuous()
+          | % Tortuoso
+      .progress-bar.progress-bar-danger(role="progressbar" aria-valuenow=city.getPercentualInexistent() aria-valuemin="0" aria-valuemax="100" style="width: "+city.getPercentualInexistent()+"%")
+        .sr-only
+          =city.getPercentualInexistent()
+          | % Inesistente
+           
+
+
+  - else
+    row
+      p.text-center
+        | Não foram encontradas as cidades próximas, experimente 
+        a(href='/cidades/'+city.ibge_id) atualizar.
+  row
+    a(class="btn btn-primary" type="button" href="/cidades/"+city.ibge_id+"/atualizar")
+      | Atualizar
+      

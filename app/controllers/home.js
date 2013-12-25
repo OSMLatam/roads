@@ -1,11 +1,20 @@
-/*!
+
+/**
  * Module dependencies.
  */
 
+var mongoose = require('mongoose')
+  , City = mongoose.model('City')
 
 
-exports.index = function (req, res) {
-  res.render('home', {
-    title: 'Node Express Mongoose Boilerplate'
+/**
+ * List
+ */
+
+exports.index = function(req, res){
+  City.count().exec(function (err, count) {
+    res.render('home/index', {
+      citiesCount: count
+    })
   })
 }

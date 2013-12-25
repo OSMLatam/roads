@@ -1,0 +1,22 @@
+extends ../layouts/default
+
+block head
+
+block main
+
+  - if (citiesCount == 0)
+    .alert.alert-info
+      | Primeira vez rodando esta plataforma? Acesse este 
+      b
+        a(href='/install') link
+      |  para carregar informações iniciais.
+
+block content
+  .jumbotron
+    h1 Caminhos do Brasil
+    p Ligue os pontos e ajude a mapear os caminhos do Brasil. Este projeto produz estatísticas sobre a existência de conexões entre as cidades brasileiras, permitindo que mapeadores identifiquem e consertem caminhos quebrados rapidamente.
+    a(class="btn btn-primary" type="button" href="/cidades/")
+      | Estatísticas
+    |  
+    a(class="btn btn-default" type="button" href="/sobre#metodologia")
+      | Sobre o projeto

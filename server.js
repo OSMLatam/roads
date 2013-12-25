@@ -1,26 +1,28 @@
 
-// var 
-//     http = require('http'),
-//     csv = require('csv'),
-//     pg = require('pg'),
-//     orm = require('orm'),
-//     routes = require('./routes'),
-//     path = require('path'),
-//     kdtree = require('./lib/kdTree.js'),
-//     cities = require('./models/city.js');
+/*!
+ * b5500
+ * Copyright(c) 2013 Vitor George <vitor.george@gmail.com>
+ * MIT Licensed
+ */
 
 /**
  * Module dependencies.
  */
-var
- express = require('express'),
- fs = require('fs');
- 
+
+var express = require('express')
+  , fs = require('fs')
+  , moment = require('moment')
+
+/**
+ * Main application entry file.
+ * Please note that the order of loading is important.
+ */
+
 // Load configurations
 // if test env, load example file
 var env = process.env.NODE_ENV || 'development'
- , config = require('./config/config')[env]
- , mongoose = require('mongoose');
+  , config = require('./config/config')[env]
+  , mongoose = require('mongoose')
 
 // Bootstrap db connection
 mongoose.connect(config.db)
@@ -38,46 +40,32 @@ require('./config/express')(app, config)
 // Bootstrap routes
 require('./config/routes')(app)
 
+// Expose moment.js as local
+moment.lang('pt')
+app.locals.fromNow = function(date) {
+  return moment(date).fromNow()
+}
+
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
 app.listen(port)
 console.log('Express app started on port '+port)
 
+// Start updating routes
+var runCityCheck = function() {
+  // find a city needing a update
+  mongoose.model('City')
+    .findOne({shouldUpdate: true})
+    .sort({lastUpdate: 1})
+    .exec(function(err, city){
+      if (err) console.log('error finding cities to update')
+      if (city) {
+        console.log('vai atualizar: '+city.fullName())
+        city.updateConnections(5)
+      }
+  })
+}
+setInterval(runCityCheck, 1000);  
+
 // expose app
 exports = module.exports = app
-
-
-// var app = express();
-// 
-// // all environments
-// app.set('port', process.env.PORT || 3000);
-// app.set('views', __dirname + '/views');
-// app.set('view engine', 'jade');
-// app.set('is_updating_cities', false);
-// app.set('least_cities_update_interval', 5 * 60 * 1000); // 5 minutes
-// app.use(express.favicon());
-// app.use(express.logger('dev'));
-// app.use(express.bodyParser());
-// app.use(express.methodOverride());
-// app.use(express.static(path.join(__dirname, 'public')));
-// app.use(orm.express("postgres://postgres@localhost/b5500", {
-//     define: function (db, models) {
-//         models.city = require('./models/city.js');
-//         console.log(models.city);
-//     }
-// }));
-// app.use(app.router);  
-// 
-// 
-// // development only
-// if ('development' == app.get('env')) {
-//   app.use(express.errorHandler());
-// }
-// 
-// app.get('/', routes.index);
-// app.get('/popular', routes.populate);
-// // app.get('/cidades', city.index)
-// 
-// http.createServer(app).listen(app.get('port'), function(){
-//   console.log('Express server listening on port ' + app.get('port'));
-// });

@@ -1,24 +1,15 @@
 extends ../layouts/default
 
 block main
-  h1= title
 
 block content
-  - if (cities.length)
+
+  h2 Diagrama do estado do mapa
+
+  - if (typeof(cities) == 'undefined') 
+    p Não há cidades!!
+    
+
+  - if (cities) 
     - each city in cities
-      .city
-        h3
-          a(href='/city/'+city._id, title=city.name) #{city.name}
-
-        .meta.muted
-          span= formatDate(article.createdAt)
-          &nbsp; - &nbsp;
-
-    - if (pages > 1)
-      .pagination
-        ul
-          != createPagination(pages, page)
-  - else
-    p Parece que não há cidades no banco de dados. Visite o 
-      a(href="/inicializacao") página de inicialização
-      .
+      div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())      

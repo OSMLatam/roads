@@ -1,30 +1,26 @@
 
-/*!
- * Module dependencies.
- */
-
 var path = require('path')
-var rootPath = path.resolve(__dirname + '../..')
-
-/**
- * Expose config
- */
+  , rootPath = path.normalize(__dirname + '/..')
+  , cityConnectionCheckInterval = 1000 // in miliseconds
 
 module.exports = {
   development: {
+    db: 'mongodb://localhost/b5500',
     root: rootPath,
-    db: 'mongodb://localhost/your_app_db_dev'
+    cityConnectionCheckInterval: cityConnectionCheckInterval,
+    osrmUrl: 'http://localhost:5000',
+    app: {
+      name: 'b5500 - Conexões entre as cidades brasileiras'
+    }
   },
   test: {
+    db: 'mongodb://localhost/b5500',
     root: rootPath,
-    db: 'mongodb://localhost/your_app_db_test'
+    cityConnectionCheckInterval: cityConnectionCheckInterval,
+    osrmUrl: 'http://localhost:5000',
+    app: {
+      name: 'b5500 - Conexões entre as cidades brasileiras'
+    }
   },
-  staging: {
-    root: rootPath,
-    db: process.env.MONGOHQ_URL
-  },
-  production: {
-    root: rootPath,
-    db: process.env.MONGOHQ_URL
-  }
-}
+  production: {}
+} 
