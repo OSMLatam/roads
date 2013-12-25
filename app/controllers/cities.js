@@ -29,7 +29,7 @@ exports.load = function(req, res, next, id){
 
 exports.index = function(req, res){
   var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
-  var perPage = 6000
+  var perPage = 30
   var options = {
     select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
     sortBy: {'stats.percentualConnected': -1},
@@ -68,7 +68,7 @@ exports.show = function(req, res){
  * Populate cities
  */
 
-exports.populate = function(req, res){
+exports.init = function(req, res){
 
   City.importFromCSV('/../../data/cities.csv',function(err) {
     if (err) return res.render('500')

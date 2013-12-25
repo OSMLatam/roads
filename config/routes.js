@@ -20,10 +20,9 @@ module.exports = function (app) {
   // home
   app.get('/', home.index)
 
-
   // city routes
   app.get('/cidades', cities.index)
-  app.get('/popular', cities.populate)
+  app.get('/iniciar', cities.init)
   app.get('/cidades/:cityId', cities.show)
   app.get('/cidades/:cityId/atualizar', cities.update)  
   app.param('cityId', cities.load)  
