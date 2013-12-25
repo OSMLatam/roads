@@ -38,7 +38,8 @@
     "request-json": "latest",
     "cron": "latest",
     "moment": "latest",
-    "geolib": "latest"
+    "geolib": "latest",
+    "winston": "latest"
   },
   "devDependencies": {
     "supertest": "latest",

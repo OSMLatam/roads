@@ -12,6 +12,7 @@
 var express = require('express')
   , fs = require('fs')
   , moment = require('moment')
+  // , winston = require('winston')
 
 /**
  * Main application entry file.
@@ -46,6 +47,14 @@ app.locals.fromNow = function(date) {
   return moment(date).fromNow()
 }
 
+// Setup logger for connection checker
+
+var logger = require('winston');
+
+logger
+  .add(logger.transports.File, { filename: 'connection_checker.log' })
+  .remove(logger.transports.Console);
+
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
 app.listen(port)
@@ -55,17 +64,18 @@ console.log('Express app started on port '+port)
 var runCityCheck = function() {
   // find a city needing a update
   mongoose.model('City')
-    .findOne({shouldUpdate: true})
+    .findOne({isUpdating: false})
     .sort({lastUpdate: 1})
     .exec(function(err, city){
-      if (err) console.log('error finding cities to update')
+      if (err) logger.error('Error while looking for cities to update.')
       if (city) {
-        console.log('vai atualizar: '+city.fullName())
-        city.updateConnections(5)
+        city.updateConnections(5, logger)
       }
   })
 }
 setInterval(runCityCheck, 1000);  
+
+
 
 // expose app
 exports = module.exports = app
