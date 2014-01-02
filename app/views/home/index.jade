@@ -14,9 +14,21 @@ block main
 block content
   .jumbotron
     h1 Caminhos do Brasil
-    p Ligue os pontos e ajude a mapear os caminhos do Brasil. Este projeto produz estatísticas sobre a existência de conexões entre as cidades brasileiras, permitindo que mapeadores identifiquem e consertem caminhos quebrados rapidamente.
+    p Ligue os pontos e ajude a mapear os caminhos do Brasil.
+    form(role='form')
+      input(id="city-search" type="text" class="form-control" placeholder="Text input")
     a(class="btn btn-primary" type="button" href="/cidades/")
       | Estatísticas
     |  
     a(class="btn btn-default" type="button" href="/sobre#metodologia")
       | Sobre o projeto
+  script.
+    window.onload = function() {
+      $('input#city-search').typeahead({                                
+        name: 'name',
+        remote: '/autocompletar/%QUERY',
+        template: '<p><strong>{{name}}</strong> – {{id}}</p>',
+        engine: Hogan,
+        limit: 5                                                                   
+      });
+    };

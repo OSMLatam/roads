@@ -12,6 +12,13 @@ var mongoose = require('mongoose')
   , client = request.newClient(config.osrmUrl)  
   , async = require('async')
   , geolib = require('geolib')
+  , logger = require('winston');
+
+
+// setup logger
+// logger
+//   .add(logger.transports.File, { filename: 'connection_checker.log' })
+//   .remove(logger.transports.Console);
 
 
 /**
@@ -97,8 +104,12 @@ CitySchema.methods = {
         +"&z=0"        
 
     client.get(query_str, function(error, response, body) {
-      if (error) callback(error)
-      callback(null, body)
+      if (!error && response.statusCode == 200) {
+        callback(null, body)
+      } else {
+        logger.error('Houve um erro ao buscar a rota entre ' + self.fullName() + ' e ' + city_to.fullName())
+        callback(error)
+      }
     })
   },
   checkConnectionTo: function(targetCity, straightDistance, doneCheckConnectionTo){
@@ -113,9 +124,17 @@ CitySchema.methods = {
         if (err) doneCheckConnectionTo(err)
         
         // get route distances
-        routeABDistance = routeAB.route_summary.total_distance / 1000
-        routeBADistance = routeBA.route_summary.total_distance / 1000
-        
+        if (typeof(routeAB.route_summary)=='undefined')  {
+          routeABDistance = routeAB.route_summary.total_distance / 1000  
+        } else { 
+          routeABDistance = 0 // route doesn't exist
+        }
+
+        if (typeof(routeBA.route_summary)=='undefined') {
+          routeBADistance = routeBA.route_summary.total_distance / 1000  
+        } else { 
+          routeBADistance = 0 // route doesn't exist
+        }
                 
         route = {
           id: targetCity,
@@ -163,22 +182,29 @@ CitySchema.methods = {
     self.stats.totalChecked = 0    
     self.save(function(err){
       if (err) {
-        console.log(err)
+        logger.error(err)
       } else {
+        logger.info('Started to check connections of ' + self.fullName())
         // find nearest cities
         self.findNearest(cities_qty, function(err,nearCities){
+          if (err) logger.error(err)
           // check routes
           async.eachSeries(nearCities, function(nearCity, doneCheckingAConnection){
               self.checkConnectionTo(nearCity.obj,nearCity.dis,doneCheckingAConnection)
             }, function(err){
-              if (err) console.log(err)
+              if (err) logger.error(err)
               
               // update start and save
               self.stats.percentualConnected = self.stats.totalConnected / self.stats.totalChecked || 0
               self.isUpdating = false
               self.shouldUpdate = false
               self.updatedAt = Date.now()
-              self.save()
+              self.save(function(err){
+                if (err) 
+                  logger.error(err)
+                else 
+                  logger.info('A atualização de ' + self.fullName() + ' terminou.');
+              })
           })
         })
       }      
@@ -217,7 +243,6 @@ CitySchema.methods = {
           }
         }
     }
-    console.log(this.getPercentualConnected()/100)
     return getColorForPercentage(this.getPercentualConnected()/100)
   },
   findNearest: function(limit, callback){

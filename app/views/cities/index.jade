@@ -4,12 +4,24 @@ block main
 
 block content
 
-  h2 Diagrama do estado do mapa
+  h2 Conexões da cidades brasileiras
 
   - if (typeof(cities) == 'undefined') 
-    p Não há cidades!!
+    p Não há cidades no banco de dados!!
     
 
-  - if (cities) 
-    - each city in cities
-      div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())      
+  - if (cities)
+    table.table
+      thead
+        tr
+          th Cidade
+          th Conexões
+          th
+      tbody
+        - each city in cities
+          tr
+            td
+              a(href='/cidades/'+city.ibge_id)=city.fullName()
+            td=city.stats.percentualConnected
+
+    h3 Cidades em atualização: #{updatingQueueSize}

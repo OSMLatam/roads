@@ -19,12 +19,12 @@ block content
     table.table
       thead
         tr
-          th.text-center 
-            h3 Caminho a
-          th.text-center 
-            h3 Ida
-          th.text-center 
-            h3 Volta
+          th
+            h3.text-center Caminho a
+          th
+            h3.text-center Ida
+          th
+            h3.text-center Volta
       tbody
         - each checkedCity in city.nearCities
          tr
@@ -80,6 +80,9 @@ block content
         | Não foram encontradas as cidades próximas, experimente 
         a(href='/cidades/'+city.ibge_id) atualizar.
   row
+    a(class="btn btn-default" type="button" href="/cidades/")
+      | Voltar a lista de cidades
+    |   
     a(class="btn btn-primary" type="button" href="/cidades/"+city.ibge_id+"/atualizar")
-      | Atualizar
+      | Pedir atualização
       
