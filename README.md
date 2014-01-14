@@ -9,6 +9,7 @@ Requirements:
 * Node.js
 * npm
 * MongoDB
+* [OSRM](http://map.project-osrm.org/) ([Install instructions](https://github.com/DennisOSRM/Project-OSRM/wiki/Running-OSRM))
 
 Clone this repository locally:
 
@@ -17,7 +18,13 @@ Clone this repository locally:
 Install Node.js dependencies:
 
     npm install
+    
+Open `config/config.js` and set your OSRM URL. 
 
 Create database `orc` in MongoDB and test:
 
     npm test
+
+Run the app:
+
+	npm start
