@@ -1,6 +1,6 @@
-# ORC - OpenStreetMap Route Checker
+# ORC 
 
-This is an application to monitor routing quality of OpenStreetMap data. In the alpha version, it will check the existence of highway routes between Brazilian cities.
+OpenStreetMap Route Checker (ORC) is an application to monitor routing quality of OpenStreetMap data. In the alpha version, it will check the existence of highway routes between Brazilian cities.
 
 ## Development
 
@@ -10,16 +10,14 @@ Requirements:
 * npm
 * MongoDB
 
-Install locally:
-
-* Clone this repository at your development folder:
+Clone this repository locally:
 
     git clone git@github.com:vgeorge/b5500.git
 
-* Run `npm install`;
+Install Node.js dependencies:
 
-* Create database `orc` in MongoDB;
+    npm install
 
-Test:
+Create database `orc` in MongoDB and test:
 
     npm test
