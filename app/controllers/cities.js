@@ -27,7 +27,42 @@ exports.load = function(req, res, next, id){
  * List
  */
 
-exports.index = function(req, res){
+exports.index = function(req,res){
+	var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
+  var perPage = 50;
+  var options = {
+    select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
+    sortBy: {'stats.percentualConnected': -1},
+    perPage: perPage,
+    page: page
+  }
+
+
+	City.count().exec(function (err, count) {
+		if (err) return res.render('500')
+		if (count == 0) {
+			res.redirect('/')
+		} else {
+			City.list(options, function(err, cities) {
+				if (err) return res.render('500')
+					res.render('cities/index', {
+					cities: cities,
+					page: page + 1,
+					pages: Math.ceil(count / perPage)
+				})
+			})
+		}
+	})
+ 
+
+ 
+}
+
+/**
+ * List
+ */
+
+exports.diagram = function(req, res){
   var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
   var perPage = 6000
   var options = {
@@ -44,7 +79,7 @@ exports.index = function(req, res){
     } else {
       City.list(options, function(err, cities) {
         if (err) return res.render('500')
-          res.render('cities/index', {
+          res.render('cities/diagram', {
             cities: cities,
             page: page + 1,
             pages: Math.ceil(count / perPage)

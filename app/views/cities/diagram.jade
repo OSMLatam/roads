@@ -1,0 +1,15 @@
+extends ../layouts/default
+
+block main
+
+block content
+
+  h2 Diagrama do estado do mapa
+
+  - if (typeof(cities) == 'undefined') 
+    p Não há cidades!!
+    
+
+  - if (cities) 
+    - each city in cities
+      div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())      

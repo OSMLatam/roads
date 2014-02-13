@@ -65,7 +65,7 @@ var runCityCheck = function() {
       }
   })
 }
-setInterval(runCityCheck, 1000);  
+// setInterval(runCityCheck, 1000);  
 
 // expose app
 exports = module.exports = app

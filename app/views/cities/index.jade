@@ -4,12 +4,34 @@ block main
 
 block content
 
-  h2 Diagrama do estado do mapa
+	.content
 
-  - if (typeof(cities) == 'undefined') 
-    p Não há cidades!!
-    
+		h2 Diagrama do estado do mapa
 
-  - if (cities) 
-    - each city in cities
-      div(class='cityBlock', style='height:7px;width:7px;float:left;background:'+city.getColor())      
+		- if (typeof(cities) == 'undefined') 
+			p Não há cidades!!
+
+
+		- if (cities) 
+			div
+				table(class="table table-hover")
+					thead
+						tr
+							th Estado
+							th Cidade
+							th.text-center Válidas
+							th.text-center Tortuosas
+							th.text-center Desconhecidas
+					tbody
+						- each city in cities
+							tr
+								td
+										=city.uf
+								td
+										=city.name
+								td.text-center
+										=city.stats.totalConnected
+								td.text-center
+										=city.stats.totalTortuosas
+								td.text-center
+										=city.stats.totalInexistent
