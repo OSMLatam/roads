@@ -12,12 +12,9 @@ var mongoose = require('mongoose')
  */
 
 exports.load = function(req, res, next, id){
-  City.findOne({ibge_id: id}).populate('nearCities.id').exec(function (err, city) {
+  City.findById(id).populate('nearCities.id').exec(function (err, city) {
     if (err) return next(err)
     if (!city) return next(new Error('not found'))
-    // fires update if nearests cities not present
-    if (city.nearCities.length == 0)
-      city.updateConnections(5)
     req.city = city
     next()
   })
@@ -53,13 +50,34 @@ exports.index = function(req,res){
 			})
 		}
 	})
- 
-
- 
 }
 
 /**
- * List
+ * City log
+ */
+
+exports.logs = function(req,res){
+	var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
+	var perPage = 50;
+	var options = {
+		perPage: perPage,
+		page: page
+	}
+
+	req.city.getLogs(options, function(err, logs){
+		console.log(err);
+		if (err)
+			return res.render('500',err);
+		else
+			res.render('cities/logs', {
+				city: req.city,
+				logs: logs
+			});
+	});
+}
+
+/**
+ * Diagram
  */
 
 exports.diagram = function(req, res){
@@ -103,7 +121,7 @@ exports.show = function(req, res){
  * Populate cities
  */
 
-exports.populate = function(req, res){
+exports.install = function(req, res){
 
   City.importFromCSV('/../../data/cities.csv',function(err) {
     if (err) return res.render('500')

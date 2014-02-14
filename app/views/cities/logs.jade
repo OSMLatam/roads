@@ -1,0 +1,27 @@
+extends ../layouts/default
+
+block main
+
+block content
+
+	h1
+		=city.fullname
+
+	h2 Log de atualizações
+	
+	div
+		table(class="table table-hover")
+			thead
+				tr
+					th Data
+					th Código de Status
+					th Mensagem
+			tbody
+				- each log in logs
+					tr
+						td
+							=log.timestamp
+						td.text-center
+							=log.statuscode
+						td.text-center
+							=log.message

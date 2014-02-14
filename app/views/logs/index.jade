@@ -1,0 +1,31 @@
+extends ../layouts/default
+
+block main
+
+block content
+
+	.content
+
+		h1 Logs de atualizações
+
+		- if (typeof(logs) == 'undefined') 
+			p Não há registros!!
+
+
+		- if (logs) 
+			div
+				table(class="table table-hover")
+					thead
+						tr
+							th Data
+							th Código de Status
+							th Mensagem
+					tbody
+						- each log in logs
+							tr
+								td
+									=log.timestamp
+								td.text-center
+									=log.statuscode
+								td.text-center
+									=log.message

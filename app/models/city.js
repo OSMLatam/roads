@@ -2,16 +2,17 @@
  * Module dependencies.
  */
 
-var mongoose = require('mongoose')
-  , env = process.env.NODE_ENV || 'development'
-  , config = require('../../config/config')[env]
-  , Schema = mongoose.Schema
-  , csv = require('csv')
-  , _ = require('underscore')
-  , request = require('request-json')
-  , client = request.newClient(config.osrmUrl)  
-  , async = require('async')
-  , geolib = require('geolib')
+var 
+	mongoose = require('mongoose'),
+	env = process.env.NODE_ENV || 'development',
+	config = require('../../config/config')[env],
+	Schema = mongoose.Schema,
+	csv = require('csv'),
+	_ = require('underscore'),
+	request = require('request-json'),
+	client = request.newClient(config.osrmUrl),
+	async = require('async'),
+	geolib = require('geolib');
 
 
 /**
@@ -19,9 +20,9 @@ var mongoose = require('mongoose')
  */
 
 var CitySchema = new Schema({
-  ibge_id: {type : String, default : '', trim : true},
+  _id: {type: String},
   name: {type : String, default : '', trim : true, required: true},
-  uf: {type: String},  
+  state: {type: String},  
   isCapital: {type: Boolean, defaut: false},
   nearCities: [{
     id: { type: Schema.ObjectId, ref: 'City'},
@@ -30,7 +31,7 @@ var CitySchema = new Schema({
     routeBackwardDistanceRatio: {type: Number, default: 0}
   }],
   stats: {
-    percentualConnected: { type: Number, default: 0},    
+    // percentualConnected: { type: Number, default: 0},    
     totalConnected: { type: Number, default: 0},
     totalTortuous: { type: Number, default: 0},
     totalInexistent: { type: Number, default: 0},        
@@ -49,10 +50,25 @@ var CitySchema = new Schema({
 CitySchema.index({ loc: '2dsphere' })
 
 /**
+ * Virtuals
+ **/
+
+
+CitySchema.virtual('fullname').get(function () {
+  return this.name + ' (' + this.state+')';
+});
+
+/**
  * Methods
  */
 
 CitySchema.methods = {
+	
+	
+	getLogs: function(options, callback) {
+		mongoose.model('Log').find({city: Schema.ObjectId(this._id)}, callback);
+	},
+
   needsUpdate: function(){
     this.shouldUpdate = true
     this.save()
@@ -184,9 +200,6 @@ CitySchema.methods = {
       }      
     })
   },
-  fullName: function(){
-    return this.name + ' (' + this.uf + ')'
-  },
   getConnectivity: function(){
     return (this.stats.percentualConnected || 0)
   },
@@ -247,16 +260,23 @@ CitySchema.methods = {
 
 CitySchema.statics = {
 
+	updateACity: function() {
+		var
+			Log = mongoose.model('Log'),
+			log = new Log({city: Schema.ObjectId(1100015), statuscode: 100});
+		log.save();
+	},
+
   load: function (id, doneLoading) {
     this
-      .findOne({ _id : id })
+      .findById(id)
       .exec(doneLoading)      
   },
   list: function (options, cb) {
     var criteria = options.criteria || {}
     this.find(options.criteria)
       .sort(options.sortBy || {'updatedAt': -1})
-      .select(options.select)
+      // .select(options.select)
       .limit(options.perPage)
       .skip(options.perPage * options.page)
       .exec(cb)
@@ -266,25 +286,22 @@ CitySchema.statics = {
       , City = mongoose.model('City')
     csv()
     .from.path(__dirname+filename, { columns: true, delimiter: ',', escape: '"' })
-    .on('record', function(row, index){
-      City.findOne({ibge_id: row.ibge_id}, function(err, city){
-        if (err) doneSavingAFinancing(err)
-        if (!city) {
-          city = new City({ibge_id: row.ibge_id})
-        }
-        city.name = row.name
-        city.uf = row.uf
-        city.isCapital = row.capital        
-        city.loc = {type: 'Point', coordinates: [new Number(row.lon),new Number(row.lat)]}
-        city.save()
-      })
-    })
-    .on('end', function(count){
-      callback()
-    })
-    .on('error', function(err){
-      callback(err)
-    })
+	.to.array(function(data){
+		City.remove(function(err){
+			async.each(data, function(item,cb){
+				city = new City({_id: item.ibge_id})
+				city.name = item.name
+				city.state = item.uf
+				city.isCapital = item.capital
+				city.loc = {type: 'Point', coordinates: [new Number(item.lon),new Number(item.lat)]}
+				console.log(item);
+				city.save(function(err){
+					console.log(err);
+					cb(err);
+				});
+			}, callback);
+		})
+    });
   }
 }
 

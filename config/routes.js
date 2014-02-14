@@ -2,8 +2,10 @@
  * Module dependencies.
  */
 
-var async = require('async')
-  , cities = require('../app/controllers/cities')
+var 
+	async = require('async'),
+	cities = require('../app/controllers/cities'),
+	logs = require('../app/controllers/logs')
 
 /**
  * Controllers
@@ -23,9 +25,13 @@ module.exports = function (app) {
 
   // city routes
   app.get('/cidades', cities.index)
-  app.get('/popular', cities.populate)
+  app.get('/instalacao', cities.install)
   app.get('/cidades/:cityId', cities.show)
+  app.get('/cidades/:cityId/logs', cities.logs);  
   app.get('/cidades/:cityId/atualizar', cities.update)  
   app.param('cityId', cities.load)  
+
+	// logs route
+  app.get('/logs', logs.index);  
 
 }

@@ -19,19 +19,21 @@ block content
 						tr
 							th Estado
 							th Cidade
-							th.text-center Válidas
-							th.text-center Tortuosas
-							th.text-center Desconhecidas
+							th.text-center Certas
+							th.text-center Tortas
+							th.text-center Quebradas
 					tbody
 						- each city in cities
 							tr
 								td
-										=city.uf
+									a(href='estados/'+city.state)
+										=city.state
 								td
+									a(href='cidades/'+city._id)
 										=city.name
 								td.text-center
 										=city.stats.totalConnected
 								td.text-center
-										=city.stats.totalTortuosas
+										=city.stats.totalTortuous
 								td.text-center
 										=city.stats.totalInexistent
