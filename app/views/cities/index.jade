@@ -6,7 +6,7 @@ block content
 
 	.content
 
-		h2 Diagrama do estado do mapa
+		h2 Cidades e suas Rotas 
 
 		- if (typeof(cities) == 'undefined') 
 			p Não há cidades!!
@@ -26,10 +26,10 @@ block content
 						- each city in cities
 							tr
 								td
-									a(href='estados/'+city.state)
+									a(href='/estados/'+city.state)
 										=city.state
 								td
-									a(href='cidades/'+city._id)
+									a(href='/cidades/'+city._id)
 										=city.name
 								td.text-center
 										=city.stats.totalConnected

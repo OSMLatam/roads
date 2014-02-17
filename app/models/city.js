@@ -12,7 +12,8 @@ var
 	request = require('request-json'),
 	client = request.newClient(config.osrmUrl),
 	async = require('async'),
-	geolib = require('geolib');
+	geolib = require('geolib'),
+	moment = require('moment');
 
 
 /**
@@ -25,9 +26,9 @@ var CitySchema = new Schema({
   state: {type: String},  
   isCapital: {type: Boolean, defaut: false},
   nearCities: [{
-    id: { type: Schema.ObjectId, ref: 'City'},
+    city: { type: String, ref: 'City'},
     straightDistance: {type: Number, default: 0},
-    routeForwardDistanceRatio: {type: Number, default: 0},
+    routeForwardDistanceRatio: {txype: Number, default: 0},
     routeBackwardDistanceRatio: {type: Number, default: 0}
   }],
   stats: {
@@ -64,6 +65,89 @@ CitySchema.virtual('fullname').get(function () {
 
 CitySchema.methods = {
 	
+	findNearest: function(limit, callback){
+		var 
+			City = mongoose.model('City'),
+			nearest = [];
+
+		this.model('City').collection
+			.geoNear(this.getLon(), this.getLat(), {spherical: true, num: limit + 1, distanceMultiplier: 6371}, function(err, cities){
+			if (err) callback(err);
+
+			// remove first element
+			cities.results.shift()
+
+			async.map(cities.results, function(city,cb){
+				nearest.push({
+					distance: parseFloat(city.dis.toFixed(1)),
+					city: city.obj._id
+				});
+				cb();
+			},function(err){
+				callback(err,nearest);
+			});
+		});
+	},
+	
+	generateRouteRequests: function(){
+		
+		var 
+			self = this,
+			RouteRequest = mongoose.model('Request'),
+			Log = mongoose.model('Log');
+		
+		if (self.nearCities.length == 0) {
+			self.findNearest(5, function(err, near){
+				self.nearCities = near;
+				self.generateRouteRequests();
+			});
+		} else {
+			_.each(self.nearCities, function(target){
+				var
+					fowardRouteRequest,
+					backwardRouteRequest;
+					
+				async.parallel([
+					function(cb){
+						var fowardRouteRequest = new RouteRequest({
+							from: self._id,
+							to: target.city
+						}).save(cb);
+					},
+					function(cb){
+						var backwardRouteRequest = new RouteRequest({
+							to: self._id,
+							from: target.city
+						}).save(cb);
+					}
+				], function(err){
+					
+					var log;
+					
+					if (err) {
+						log = new Log({
+							status: 'error', 
+							context: 'request generation', 
+							data: {
+								errors: err
+							}
+						});
+					} else {
+						log = new Log({
+							status: 'info', 
+							context: 'request generation', 
+							data: {
+								errors: err
+							}
+						});
+					}
+
+					log.affectedCities.addToSet([self._id, target._id]);
+					log.save();
+				})
+			});
+		}
+	},
 	
 	getLogs: function(options, callback) {
 		mongoose.model('Log').find({city: Schema.ObjectId(this._id)}, callback);
@@ -232,26 +316,8 @@ CitySchema.methods = {
     }
     console.log(this.getPercentualConnected()/100)
     return getColorForPercentage(this.getPercentualConnected()/100)
-  },
-  findNearest: function(limit, callback){
-    var City = mongoose.model('City')
-    
-    this.model('City').collection
-      .geoNear(this.getLon(), this.getLat(), {spherical: true, num: limit + 1, distanceMultiplier: 6371}, function(err, cities){
-        if (err) callback(err)
-
-        // remove first element
-        cities.results.shift()
-
-        // City model should be reconstruted because of geoNear possible bug
-        _.map(cities.results, function(result){
-          result.dis = parseFloat(result.dis.toFixed(1));
-          result.obj = new City(result.obj)
-        })
-
-        callback({},cities.results)
-    })    
   }
+
 }
 
 /**
@@ -261,10 +327,30 @@ CitySchema.methods = {
 CitySchema.statics = {
 
 	updateACity: function() {
+
 		var
-			Log = mongoose.model('Log'),
-			log = new Log({city: Schema.ObjectId(1100015), statuscode: 100});
-		log.save();
+			expirationTime = moment().subtract('day', 1).toDate();
+				
+		// Find the city most in need of a update. 
+		this
+			.findOne({
+				$and: [ 
+					{ 
+						$or: [
+							{needsUpdate: true}, 
+							{updatedAt: {$lt: expirationTime}}
+						]
+					},
+						{
+							isUpdating: false
+						}
+					]
+				
+				})
+			.limit(1)
+			.exec(function(err, city){
+				city.generateRouteRequests();
+			})
 	},
 
   load: function (id, doneLoading) {

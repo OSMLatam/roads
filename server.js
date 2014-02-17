@@ -69,7 +69,7 @@ var runCityCheck = function() {
 
 setInterval(function(){
 	mongoose.model('City').updateACity();
-}, 1000);  
+}, 3000);  
 
 // expose app
 exports = module.exports = app

@@ -13,8 +13,9 @@ var mongoose = require('mongoose'),
 
 var LogSchema = new Schema({
 	timestamp: {type: Date, default: Date.now},
-	city: {type: Schema.ObjectId, ref: 'City'},
 	statuscode: Number,
+	status: {type: String, enum: ['error', 'info'], default: 'info'},
+	affectedCities: [{type: String, ref: 'City'}],
 	data: {}
 });
 
