@@ -3,8 +3,8 @@
  * Module dependencies.
  */
 
-var mongoose = require('mongoose')
-  , City = mongoose.model('City')
+var mongoose = require('mongoose');
+var City = mongoose.model('City');
 
 
 /**
@@ -12,9 +12,10 @@ var mongoose = require('mongoose')
  */
 
 exports.index = function(req, res){
-  City.count().exec(function (err, count) {
+  City.find({isCapital: true}).sort({name: 1}).exec(function (err, cities) {
+  	if (err) return res.render('500');
     res.render('home/index', {
-      citiesCount: count
+      cities: cities
     })
   })
 }

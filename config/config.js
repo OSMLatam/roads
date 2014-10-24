@@ -1,26 +1,27 @@
+var _ = require('underscore');
+var path = require('path');
+var cityConnectionCheckInterval = 3000 // in miliseconds
 
-var path = require('path')
-  , rootPath = path.normalize(__dirname + '/..')
-  , cityConnectionCheckInterval = 3000 // in miliseconds
+var development = {
+  db: 'mongodb://localhost/monitor-dev',
+  osrmUrl: 'http://router.project-osrm.org'
+}
+
+var test = {
+  db: 'mongodb://localhost/monitor-test',  
+  osrmUrl: 'http://localhost:5000'
+}
+
+var production = {
+}
+
+var defaults = {
+  cityConnectionCheckInterval: cityConnectionCheckInterval,
+  root: path.normalize(__dirname + '/..')
+}; 
 
 module.exports = {
-  development: {
-    db: 'mongodb://localhost/orc',
-    root: rootPath,
-    cityConnectionCheckInterval: cityConnectionCheckInterval,
-    osrmUrl: 'http://router.project-osrm.org',
-    app: {
-      name: 'ORC - OpenStreetMap Route Checker'
-    }
-  },
-  test: {
-    db: 'mongodb://localhost/orc',
-    root: rootPath,
-    cityConnectionCheckInterval: cityConnectionCheckInterval,
-    osrmUrl: 'http://localhost:5000',
-    app: {
-      name: 'ORC - OpenStreetMap Route Checker'
-    }
-  },
-  production: {}
-} 
+  development: _.extend(development, defaults),
+  test: _.extend(test, defaults),
+  production: _.extend(production, defaults)
+}[process.env.NODE_ENV || 'development'];

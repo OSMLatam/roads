@@ -1,6 +1,6 @@
-# City Links
+# Transporte Aberto Monitor
 
-This is a platform to verify the existence of routable connections between cities in OpenStreetMap.
+Transportation data from OpenStreetMap.
 
 ## How monitoring works
 
@@ -22,7 +22,7 @@ Dependencies:
 
 * node 0.10.x
 * npm 1.2.x
-
+* [OSRM - Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM)
 
 Clone this repository locally and run:
 

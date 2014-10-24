@@ -1,7 +1,6 @@
 
 /*!
- * b5500
- * Copyright(c) 2013 Vitor George <vitor.george@gmail.com>
+ * Copyright(c) 2014 Vitor George <vitor.george@gmail.com>
  * MIT Licensed
  */
 
@@ -9,10 +8,9 @@
  * Module dependencies.
  */
 
-var express = require('express')
-  , fs = require('fs')
-  , moment = require('moment')
-  // , winston = require('winston')
+var express = require('express');
+var fs = require('fs');
+var moment = require('moment');
 
 /**
  * Main application entry file.
@@ -21,9 +19,9 @@ var express = require('express')
 
 // Load configurations
 // if test env, load example file
-var env = process.env.NODE_ENV || 'development'
-  , config = require('./config/config')[env]
-  , mongoose = require('mongoose')
+var env = process.env.NODE_ENV || 'development';
+var config = require('./config/config');
+var mongoose = require('mongoose');
 
 // Bootstrap db connection
 mongoose.connect(config.db)
@@ -42,7 +40,7 @@ require('./config/express')(app, config)
 require('./config/routes')(app)
 
 // Expose moment.js as local
-moment.lang('pt')
+moment.locale('pt')
 app.locals.fromNow = function(date) {
   return moment(date).fromNow()
 }
@@ -61,20 +59,25 @@ app.listen(port)
 console.log('Express app started on port '+port)
 
 // Start updating routes
-var runCityCheck = function() {
-  // find a city needing a update
-  mongoose.model('City')
-    .findOne({isUpdating: false})
-    .sort({lastUpdate: 1})
-    .exec(function(err, city){
-      if (err) logger.error('Error while looking for cities to update.')
-      if (city) {
-        city.updateConnections(5, logger)
-      }
-  })
-}
+// var runCityCheck = function() {
+//   // find a city needing a update
+//   mongoose.model('City')
+//     .findOne({isUpdating: false})
+//     .sort({lastUpdate: 1})
+//     .exec(function(err, city){
+//       if (err) logger.error('Error while looking for cities to update.')
+//       if (city) {
+//         city.updateConnections(5, logger)
+//       }
+//   })
+// }
 // setInterval(runCityCheck, 1000);  
 
+// When mongoose is ready
+var linkChecker = require('./lib/linkChecker');
+mongoose.connection.on('connected', function(){
+  linkChecker.run();
+});
 
 
 // expose app

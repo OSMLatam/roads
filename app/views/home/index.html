@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+	<head prefix="og: http://ogp.me/ns# nodejsexpressdemo: http://ogp.me/ns/apps/nodejsexpressdemo#">
+			{# Styles #}
+			<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
+			<link href="/css/jquery.tagsinput.css" rel="stylesheet">
+			<link href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="/css/app.css">
+	</head>
+
+	<body>
+		<div class="container">
+			<div class="content">
+				<h1>
+					Transporte Aberto
+				</h1>
+				<h2>
+					Cidades monitoradas
+				</h2>
+				<ul>
+					{% if (cities.length) %}
+						{% for city in cities %}
+							<li><a href="/cities/{{city.ibge_id}}">{{city.name}}</a></li>
+						{% endfor %}
+					{% endif %} 
+						
+				</ul>
+				
+			</div>
+		</div>
+	</body>
+</html>

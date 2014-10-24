@@ -3,9 +3,9 @@
  * Module dependencies.
  */
 
-var mongoose = require('mongoose')
-  , City = mongoose.model('City')
-  , _ = require('underscore')
+var mongoose = require('mongoose');
+var City = mongoose.model('City');
+var _ = require('underscore');
 
 /**
  * Load
