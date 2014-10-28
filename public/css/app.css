@@ -1,5 +1,5 @@
 body {
-  padding-top: 60px;
+  /*padding-top: 60px;*/
 }
 
 .container {
@@ -20,6 +20,74 @@ body {
 #colophon {
   padding: 40px;
 }
+
+/* HOME */
+
+img.bg {
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+    
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+    
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -100;
+}
+
+@media screen and (max-width: 1024px) { /* Specific to this particular image */
+  img.bg {
+    left: 50%;
+    margin-left: -512px;   /* 50% */
+  }
+}
+
+
+
+.masthead {
+    height: 500px;
+}
+
+.masthead .container {
+    padding-top: 200px;
+}
+
+.masthead h1 span { 
+   color: white; 
+   /*font: bold 24px/45px Helvetica, Sans-Serif; */
+   /*letter-spacing: -1px;  */
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0.7);
+   padding: 10px; 
+}
+
+.masthead p span { 
+   color: white; 
+   font: 24px/45px Helvetica, Sans-Serif; 
+   /*letter-spacing: -1px;  */
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0.7);
+   padding: 10px; 
+}
+
+.masthead span.spacer {
+   padding:0 5px;
+}
+
+.masthead li span { 
+   color: white; 
+   font: 15px/30px Helvetica, Sans-Serif; 
+   /*letter-spacing: -1px;  */
+   background: rgb(0, 0, 0); /* fallback color */
+   background: rgba(0, 0, 0, 0.7);
+   padding: 10px; 
+}
+
+
 
 /* Typeahead settings */
 

@@ -4,7 +4,8 @@ var cityConnectionCheckInterval = 3000 // in miliseconds
 
 var development = {
   db: 'mongodb://localhost/monitor-dev',
-  osrmUrl: 'http://router.project-osrm.org'
+  osrmUrl: 'http://localhost:5000'
+  // osrmUrl: 'http://router.project-osrm.org'
 }
 
 var test = {

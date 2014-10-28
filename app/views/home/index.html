@@ -1,32 +1,25 @@
-<!doctype html>
-<html>
-	<head prefix="og: http://ogp.me/ns# nodejsexpressdemo: http://ogp.me/ns/apps/nodejsexpressdemo#">
-			{# Styles #}
-			<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet">
-			<link href="/css/jquery.tagsinput.css" rel="stylesheet">
-			<link href="//netdna.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-			<link rel="stylesheet" href="/css/app.css">
-	</head>
+{% include '../includes/head.html' %}
 
-	<body>
+  <body>
+
+	<img class="bg" src="img/jumbo-1.jpg"/>
+
+	<div class="masthead">
+		<!-- style="background-image: url('img/jumbo-1.jpg'); background-size: cover; background-position: bottom;" -->
+
 		<div class="container">
-			<div class="content">
-				<h1>
-					Transporte Aberto
-				</h1>
-				<h2>
-					Cidades monitoradas
-				</h2>
-				<ul>
-					{% if (cities.length) %}
-						{% for city in cities %}
-							<li><a href="/cities/{{city.ibge_id}}">{{city.name}}</a></li>
-						{% endfor %}
-					{% endif %} 
-						
-				</ul>
-				
-			</div>
+			<h1><span>Transporte aberto</span></h1>
+			<p>
+				<span>Acesse dados sobre a infra-estrutura de transportes nas cidades,<span class='spacer'></span></br>
+				<span class='spacer'></span>produzidos pela comunidade do OpenStreetMap.</span>
+			</p>
+
+				<p.link><span><a href='/docs'>Como mapear com o OpenStreetMap</a></span></p>
+				<p.link><span><a href='/cities'>Lista de cidades</a></span></p>
+				<p.link><span><a href='/about'>Sobre este projeto</a></span></p>
+
+			
 		</div>
-	</body>
+		
+	</div>
 </html>
