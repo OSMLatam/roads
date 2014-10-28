@@ -19,5 +19,7 @@ angular.module('ta.home', [
 	'$scope',
 	function($scope) {
 
+		$scope.items = ['um', 'dois', 'tres'];
+
 	}
 ]);

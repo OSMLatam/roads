@@ -20,21 +20,21 @@ var cities = require('../app/controllers/cities');
 module.exports = function (app) {
 
 
-	// tasks
-	app.get('/tasks/refresh-links', tasks.refreshLinks)
-
-	// application init
-	app.get('/iniciar', cities.init)
-	
-	// city routes
-	app.get('/cidades', cities.index)
-	app.get('/cidades/:cityId', cities.show)
-	app.get('/cidades/:cityId/atualizar', cities.update)  
-	app.get('/autocompletar/:term', cities.autocomplete)
-	app.param('cityId', cities.load)  
+	// // tasks
+	// app.get('/tasks/refresh-links', tasks.refreshLinks)
+	//
+	// // application init
+	// app.get('/iniciar', cities.init)
+	//
+	// // city routes
+	// app.get('/cidades', cities.index)
+	// app.get('/cidades/:cityId', cities.show)
+	// app.get('/cidades/:cityId/atualizar', cities.update)
+	// app.get('/autocompletar/:term', cities.autocomplete)
+	// app.param('cityId', cities.load)
 
 	app.get('/*', function(req, res) {
 		res.sendFile(config.root + '/dist/views/index.html');
-	});  
+	});
 
 }

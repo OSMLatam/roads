@@ -1,2 +1,6 @@
 section#home
-	p Teste
+	img(class="bg",src="img/jumbo-1.jpg")
+
+	input(ng-model="textSearch")
+	ul(ng-show="textSearch")
+		li(ng-repeat="item in items | filter:textSearch:$") {{item}}
