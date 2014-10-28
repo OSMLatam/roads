@@ -1,0 +1,67 @@
+/*
+ * SOCIAL
+ */
+
+#social {
+	.items {
+		li {
+			width: 33.3333%;
+			max-width: 600px;
+			min-width: 100px;
+			padding-right: 5px;
+			margin: 0 0 5px;
+			.box-sizing(border-box);
+			.item-content {
+				background: url(../img/bg-black.jpg);
+				padding: 10px;
+				img {
+					width: 100%;
+					height: auto;
+					display: block;
+				}
+				.media-type {
+					font-family: "entypo-social";
+					font-size: 60px;
+					line-height: 40px;
+					color: @red;
+					width: 45px;
+					height: 45px;
+					margin: 0 auto 0;
+					position: relative;
+					z-index: 2;
+					padding: 10px;
+					text-align: center;
+					&.icon {
+						font-family: "entypo";
+					}
+				}
+				.author {
+					color: #fff;
+					text-align: center;
+					font-style: italic;
+					position: relative;
+					z-index: 2;
+				}
+				.link {
+					text-align:center;
+					font-size: 12px;
+					margin: -10px 0 20px;
+					text-transform: lowercase;
+					a {
+						color: #999;
+						text-decoration: none;
+						&:hover {
+							color: #fff;
+						}
+					}
+				}
+			}
+		}
+	}
+	.end {
+		margin: 40px 0;
+		text-align: center;
+		font-style: italic;
+		color: #999;
+	}
+}
