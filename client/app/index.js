@@ -7,10 +7,13 @@ require('./helpers');
  */
 
 require('./home');
+require('./cities');
 
 angular.module('ta', [
 	'ui.router',
-	'ta.home'
+	'ui.bootstrap',
+	'ta.home',
+	'ta.cities'
 ])
 
 .config([
@@ -57,5 +60,9 @@ angular.module('ta', [
 ])
 
 $(document).ready(function() {
-	angular.bootstrap(document, ['ta']);
+	window.ta = {};
+	// $.get('/api/v1/cities', function(data) {
+		// window.ta.cities = data;
+		angular.bootstrap(document, ['ta']);
+	// });
 });

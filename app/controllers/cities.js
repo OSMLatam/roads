@@ -28,34 +28,41 @@ exports.load = function(req, res, next, id){
  */
 
 exports.index = function(req, res){
-  var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
-  var perPage = 30
-  var options = {
-    select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
-    sortBy: {'stats.percentualConnected': -1},
-    perPage: perPage,
-    page: page
-  }
-  
 
-  City.count().exec(function (err, count) {
-    City.count({isUpdating: true}).exec(function (err, updatingQueueSize) {
-      if (err) return res.render('500')
-      if (count == 0) {
-        res.redirect('/')
-      } else {
-        City.list(options, function(err, cities) {
-          if (err) return res.render('500')
-            res.render('cities/index', {
-              cities: cities,
-              updatingQueueSize: updatingQueueSize,
-              page: page + 1,
-              pages: Math.ceil(count / perPage)
-          })
-        })
-      }
-    })
-  })
+  City.list({}, function(err, cities){
+    console.log(err);
+    if (err) return res.json(500, { error: 'Unknow error'});
+    return res.json(cities);
+  });
+
+  // var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
+  // var perPage = 30
+  // var options = {
+  //   select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
+  //   sortBy: {'stats.percentualConnected': -1},
+  //   perPage: perPage,
+  //   page: page
+  // }
+  //
+  //
+  // City.count().exec(function (err, count) {
+  //   City.count({isUpdating: true}).exec(function (err, updatingQueueSize) {
+  //     if (err) return res.render('500')
+  //     if (count == 0) {
+  //       res.redirect('/')
+  //     } else {
+  //       City.list(options, function(err, cities) {
+  //         if (err) return res.render('500')
+  //           res.render('cities/index', {
+  //             cities: cities,
+  //             updatingQueueSize: updatingQueueSize,
+  //             page: page + 1,
+  //             pages: Math.ceil(count / perPage)
+  //         })
+  //       })
+  //     }
+  //   })
+  // })
 }
 
 /**
@@ -65,7 +72,7 @@ exports.index = function(req, res){
 exports.show = function(req, res){
   res.render('cities/show', {
     city: req.city
-  })        
+  })
 }
 
 /**
@@ -77,7 +84,7 @@ exports.init = function(req, res){
   City.importFromCSV('/../../data/cities.csv',function(err) {
     if (err) return res.render('500')
     res.redirect('/')
-  })  
+  })
 }
 
 /**
@@ -93,7 +100,7 @@ exports.update = function(req, res){
  * Find cities
  */
 
-exports.autocomplete = function(req, res){
+exports.search = function(req, res){
   var term = make_pattern(req.params.term);
   City.find({name: term}).select('id name').limit(5).exec(function(err,items){
     res.jsonp(items);

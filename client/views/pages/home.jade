@@ -1,6 +1,8 @@
 section#home
-	img(class="bg",src="img/jumbo-1.jpg")
-
-	input(ng-model="textSearch")
-	ul(ng-show="textSearch")
-		li(ng-repeat="item in items | filter:textSearch:$") {{item}}
+	div.container
+		h1 Transporte Aberto
+		div(class='container-fluid', ng-controller="CitiesController")
+			h2 Busque sua cidade
+			pre Model: {{selected | json}}
+			input(type="text", ng-model="selected", typeahead="city for city in cities | filter:$viewValue | limitTo:8", class="form-control")
+			i(ng-show="loadingLocations",class="glyphicon glyphicon-refresh")

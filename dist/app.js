@@ -1,6 +1,34 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+'use strict';
+
+angular.module('ta.cities', [
+])
+.config([
+  '$stateProvider',
+  function($stateProvider) {
+
+    $stateProvider
+      .state('cities', {
+        url: '/cities',
+        controller: 'CitiesController',
+        templateUrl: '/views/pages/home.html'
+      });
+
+  }
+])
+.controller('CitiesController', [
+  '$scope',
+  '$window',
+  function($scope, $window) {
+
+    $scope.selected = undefined;
+    $scope.cities = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Dakota', 'North Carolina', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'];
+  }
+]);
 
 },{}],2:[function(require,module,exports){
+
+},{}],3:[function(require,module,exports){
 'use strict';
 
 angular.module('ta.home', [
@@ -20,14 +48,28 @@ angular.module('ta.home', [
 ])
 .controller('HomeController', [
 	'$scope',
-	function($scope) {
+	'$window',
+	function($scope, $window) {
 
-		$scope.items = ['um', 'dois', 'tres'];
+		$scope.items = $window.ta.cities;
+
+		$scope.alerts = [
+	    { type: 'danger', msg: 'Oh snap! Change a few things up and try submitting again.' },
+	    { type: 'success', msg: 'Well done! You successfully read this important alert message.' }
+	  ];
+
+	  $scope.addAlert = function() {
+	    $scope.alerts.push({msg: 'Another alert!'});
+	  };
+
+	  $scope.closeAlert = function(index) {
+	    $scope.alerts.splice(index, 1);
+	  };
 
 	}
 ]);
 
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 'use strict';
 
 require('./helpers');
@@ -37,10 +79,13 @@ require('./helpers');
  */
 
 require('./home');
+require('./cities');
 
 angular.module('ta', [
 	'ui.router',
-	'ta.home'
+	'ui.bootstrap',
+	'ta.home',
+	'ta.cities'
 ])
 
 .config([
@@ -87,7 +132,11 @@ angular.module('ta', [
 ])
 
 $(document).ready(function() {
-	angular.bootstrap(document, ['ta']);
+	window.ta = {};
+	// $.get('/api/v1/cities', function(data) {
+		// window.ta.cities = data;
+		angular.bootstrap(document, ['ta']);
+	// });
 });
 
-},{"./helpers":1,"./home":2}]},{},[3]);
+},{"./cities":1,"./helpers":2,"./home":3}]},{},[4]);
