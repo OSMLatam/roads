@@ -11,7 +11,6 @@ require('./cities');
 
 angular.module('ta', [
 	'ui.router',
-	'ui.bootstrap',
 	'ta.home',
 	'ta.cities'
 ])
