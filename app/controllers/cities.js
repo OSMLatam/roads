@@ -30,7 +30,6 @@ exports.load = function(req, res, next, id){
 exports.index = function(req, res){
 
   City.list({}, function(err, cities){
-    console.log(err);
     if (err) return res.json(500, { error: 'Unknow error'});
     return res.json(cities);
   });

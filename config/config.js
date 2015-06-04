@@ -4,8 +4,7 @@ var cityConnectionCheckInterval = 3000 // in miliseconds
 
 var development = {
   db: 'mongodb://localhost/monitor-dev',
-  // osrmUrl: 'http://localhost:5000'
-  osrmUrl: 'http://router.project-osrm.org'
+  osrmUrl: 'http://localhost:5000'
 }
 
 var test = {
@@ -14,11 +13,13 @@ var test = {
 }
 
 var production = {
+  db: process.env.MONGO_URI
 }
 
 var defaults = {
   cityConnectionCheckInterval: cityConnectionCheckInterval,
-  root: path.normalize(__dirname + '/..')
+  root: path.normalize(__dirname + '/..'),
+  osrmUrl: 'http://router.project-osrm.org'
 };
 
 module.exports = {

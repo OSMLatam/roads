@@ -20,6 +20,7 @@
     "npm": "1.2.x"
   },
   "scripts": {
+    "start": "node server.js",
     "watch": "NODE_ENV=development ./node_modules/.bin/nodemon server.js",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha --reporter spec test/test-*.js"
   },
@@ -35,6 +36,7 @@
     "cron": "^1.0.5",
     "csurf": "^1.6.2",
     "csv": "^0.3.x",
+    "dotenv": "^1.1.0",
     "express": "^4.9.5",
     "express-session": "^1.8.2",
     "geolib": "^2.0.14",
@@ -50,7 +52,7 @@
     "jade": "^1.7.0",
     "method-override": "^2.3.0",
     "moment": "^2.8.3",
-    "mongoose": "^3.8.17",
+    "mongoose": "^4.0.4",
     "morgan": "^1.3.2",
     "multer": "^0.1.6",
     "request": "^2.45.0",

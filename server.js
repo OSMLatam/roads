@@ -11,6 +11,7 @@
 var express = require('express');
 var fs = require('fs');
 var moment = require('moment');
+var dotenv = require('dotenv').load();
 
 /**
  * Main application entry file.
@@ -58,27 +59,11 @@ var port = process.env.PORT || 3000
 app.listen(port)
 console.log('Express app started on port '+port)
 
-// Start updating routes
-// var runCityCheck = function() {
-//   // find a city needing a update
-//   mongoose.model('City')
-//     .findOne({isUpdating: false})
-//     .sort({lastUpdate: 1})
-//     .exec(function(err, city){
-//       if (err) logger.error('Error while looking for cities to update.')
-//       if (city) {
-//         city.updateConnections(5, logger)
-//       }
-//   })
-// }
-// setInterval(runCityCheck, 1000);
-
 // When mongoose is ready
 var linkChecker = require('./lib/linkChecker');
 mongoose.connection.on('connected', function(){
   linkChecker.run();
 });
-
 
 // expose app
 exports = module.exports = app
