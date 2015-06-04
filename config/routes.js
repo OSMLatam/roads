@@ -36,8 +36,6 @@ module.exports = function (app) {
 
 
 
-	app.get('/*', function(req, res) {
-		res.sendFile(config.root + '/dist/views/index.html');
-	});
+	app.get('/', home.index);
 
 }

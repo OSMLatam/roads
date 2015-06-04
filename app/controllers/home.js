@@ -3,8 +3,10 @@
  * Module dependencies.
  */
 
+var moment = require('moment');
 var mongoose = require('mongoose');
 var City = mongoose.model('City');
+var Link = mongoose.model('Link');
 
 
 /**
@@ -12,10 +14,16 @@ var City = mongoose.model('City');
  */
 
 exports.index = function(req, res){
-  City.find({isCapital: true}).sort({name: 1}).exec(function (err, cities) {
-  	if (err) return res.render('500');
-    res.render('home/index', {
-      cities: cities
-    })
-  })
+  Link
+    .find({status: {$ne: 'connected'}})
+    .populate('from to')
+    .sort({updatedAt: -1})
+    .limit(50)
+    .exec(function(err, links){
+    	if (err) return res.render('500');
+      res.render('home/index', {
+        moment: moment,
+        links: links
+      })
+    });
 }

@@ -1,25 +1,49 @@
-{% include '../includes/head.html' %}
 
-  <body>
+{% extends '../layouts/default.html' %}
 
-	<img class="bg" src="img/jumbo-1.jpg"/>
+{% block main %}
+  <h1>Mapazonia Roads</h1>
+{% endblock %}
 
-	<div class="masthead">
-		<!-- style="background-image: url('img/jumbo-1.jpg'); background-size: cover; background-position: bottom;" -->
+{% block content %}
+  {% if (links.length) %}
 
-		<div class="container">
-			<h1><span>Transporte aberto</span></h1>
-			<p>
-				<span>Acesse dados sobre a infra-estrutura de transportes nas cidades,<span class='spacer'></span></br>
-				<span class='spacer'></span>produzidos pela comunidade do OpenStreetMap.</span>
-			</p>
+    <table class="u-full-width">
+      <thead>
+        <tr>
+          <th>Route</th>
+          <th>Status</th>
+          <th>Verified at</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for link in links %}
+          <tr>
+            <td>
+              <a href="{{link.from.getViewInOSRMLink(link.to)}}" target='_blank'>
+                {{ link.from.name }} ({{ link.from.uf }}) to {{ link.to.name }} ({{ link.to.uf }})
+              </a>
+            </td>
+            <td>{{ link.status }}</td>
+            <td>{{ moment(link.updatedAt).fromNow() }}</td>
+            <h3>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
 
-				<p.link><span><a href='/docs'>Como mapear com o OpenStreetMap</a></span></p>
-				<p.link><span><a href='/cities'>Lista de cidades</a></span></p>
-				<p.link><span><a href='/about'>Sobre este projeto</a></span></p>
 
-			
-		</div>
-		
-	</div>
-</html>
+
+    {% if (pages > 1) %}
+      <ul class="pagination">
+        {% autoescape false %}
+          {{ createPagination(pages, page) }}
+        {% endautoescape %}
+      </ul>
+    {% endif %}
+  {% else %}
+    <h4 class="muted">
+      No links.&nbsp;
+    </h4>
+  {% endif %}
+{% endblock %}

@@ -8,6 +8,7 @@ var LinkSchema = new Schema({
 	straightDistance: {type: Number, default: 0},
 	forwardDistance: {type: Number, default: 0},
 	backwardDistance: {type: Number, default: 0},
+	status: {type: String, enum: ['connected', 'tortuous', 'broken']},
 	updatedAt: { type: Date, default: Date.now}
 });
 

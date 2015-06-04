@@ -40,7 +40,7 @@ require('./config/express')(app, config)
 require('./config/routes')(app)
 
 // Expose moment.js as local
-moment.locale('pt')
+// moment.locale('pt')
 app.locals.fromNow = function(date) {
   return moment(date).fromNow()
 }
@@ -71,7 +71,7 @@ console.log('Express app started on port '+port)
 //       }
 //   })
 // }
-// setInterval(runCityCheck, 1000);  
+// setInterval(runCityCheck, 1000);
 
 // When mongoose is ready
 var linkChecker = require('./lib/linkChecker');

@@ -35,34 +35,6 @@ exports.index = function(req, res){
     return res.json(cities);
   });
 
-  // var page = (req.param('page') > 0 ? req.param('page') : 1) - 1
-  // var perPage = 30
-  // var options = {
-  //   select: 'ibge_id name uf stats.totalConnected stats.totalChecked stats.percentualConnected',
-  //   sortBy: {'stats.percentualConnected': -1},
-  //   perPage: perPage,
-  //   page: page
-  // }
-  //
-  //
-  // City.count().exec(function (err, count) {
-  //   City.count({isUpdating: true}).exec(function (err, updatingQueueSize) {
-  //     if (err) return res.render('500')
-  //     if (count == 0) {
-  //       res.redirect('/')
-  //     } else {
-  //       City.list(options, function(err, cities) {
-  //         if (err) return res.render('500')
-  //           res.render('cities/index', {
-  //             cities: cities,
-  //             updatingQueueSize: updatingQueueSize,
-  //             page: page + 1,
-  //             pages: Math.ceil(count / perPage)
-  //         })
-  //       })
-  //     }
-  //   })
-  // })
 }
 
 /**
