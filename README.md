@@ -16,7 +16,7 @@ Clone this repository locally:
 
 Change to repository directory and install packages:
 
-    cd transporte-aberto
+    cd roads
     npm install
 
 Run the server:
