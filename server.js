@@ -1,25 +1,11 @@
-
-/*!
- * Copyright(c) 2014 Vitor George <vitor.george@gmail.com>
- * MIT Licensed
- */
-
-/**
- * Module dependencies.
- */
+'use strict';
 
 var express = require('express');
 var fs = require('fs');
 var moment = require('moment');
-var dotenv = require('dotenv').load();
 
-/**
- * Main application entry file.
- * Please note that the order of loading is important.
- */
 
-// Load configurations
-// if test env, load example file
+// Config
 var env = process.env.NODE_ENV || 'development';
 var config = require('./config/config');
 var mongoose = require('mongoose');
@@ -34,6 +20,7 @@ fs.readdirSync(models_path).forEach(function (file) {
 })
 
 var app = express()
+
 // express settings
 require('./config/express')(app, config)
 
@@ -62,7 +49,7 @@ console.log('Express app started on port '+port)
 // When mongoose is ready
 var linkChecker = require('./lib/linkChecker');
 mongoose.connection.on('connected', function(){
-  linkChecker.run();
+  linkChecker.init();
 });
 
 // expose app

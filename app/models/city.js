@@ -88,11 +88,9 @@ CitySchema.methods = {
 		})
 	},
 	getViewInOSRMLink: function(city_to){
-		return "http://map.project-osrm.org/?loc="+this.getLat()+","+this.getLon()
-			+"&loc="+city_to.loc.coordinates[1]+","+city_to.loc.coordinates[0]
-			+"&output=json"
-			+"&z=0"
-			+"&hl=pt"
+		return "http://www.openstreetmap.org/directions?engine=osrm_car&" +
+			"route=" + this.getLat() + "," + this.getLon() + ";" +
+			city_to.loc.coordinates[1] + "," + city_to.loc.coordinates[0];
 	},
 	routeTo: function(city_to, callback){
 		var self = this
