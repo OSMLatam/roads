@@ -1,19 +1,17 @@
 {
-  "name": "mapazonia-roads",
-  "description": "Mapazonia Roads",
+  "name": "roads",
+  "description": "Check road connectivity between cities in OpenStreetMap",
   "keywords": [
     "openstreetmap",
-    "transit",
-    "mobility",
     "osrm",
-    "routes"
+    "routing"
   ],
   "version": "0.1.0",
   "private": false,
-  "author": "Vitor George <vitor.george@gmail.com> (http://vgeorge.github.com)",
+  "author": "Vitor George <vitor.george@gmail.com>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mapazonia/roads.git"
+    "url": "https://github.com/vgeorge/roads.git"
   },
   "engines": {
     "node": "6.9.x",
