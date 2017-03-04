@@ -1,7 +1,5 @@
 FROM node:7.7.1
 
-EXPOSE 8080
-
 # Setup env
 ENV APP_USER=node
 ENV HOME=/home/node

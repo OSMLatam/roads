@@ -14,3 +14,5 @@ roads:
   volumes:
     - .:/home/node/roads
     - /home/node/roads/node_modules
+  ports:
+    - 3000:3000
