@@ -22,7 +22,7 @@ module.exports = function (app) {
 	var apiPrefix = '/api/v1';
 
 	// // tasks
-	// app.get('/tasks/refresh-links', tasks.refreshLinks)
+	app.get('/tasks/refresh-links', tasks.refreshLinks)
 	//
 	// // application init
 	// app.get('/iniciar', cities.init)
