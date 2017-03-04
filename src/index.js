@@ -7,14 +7,14 @@ var moment = require('moment');
 
 // Config
 var env = process.env.NODE_ENV || 'development';
-var config = require('./config/config');
+var config = require('../config/config');
 var mongoose = require('mongoose');
 
 // Bootstrap db connection
 mongoose.connect(config.db)
 
 // Bootstrap models
-var models_path = __dirname + '/app/models'
+var models_path = __dirname + '/models'
 fs.readdirSync(models_path).forEach(function (file) {
   if (~file.indexOf('.js')) require(models_path + '/' + file)
 })
@@ -22,10 +22,10 @@ fs.readdirSync(models_path).forEach(function (file) {
 var app = express()
 
 // express settings
-require('./config/express')(app, config)
+require('../config/express')(app, config)
 
 // Bootstrap routes
-require('./config/routes')(app)
+require('../config/routes')(app)
 
 // Expose moment.js as local
 // moment.locale('pt')

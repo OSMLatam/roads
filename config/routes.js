@@ -9,9 +9,9 @@ var config = require('./config');
  * Controllers
  */
 
-var home = require('../app/controllers/home');
-var tasks = require('../app/controllers/tasks');
-var cities = require('../app/controllers/cities');
+var home = require('../src/controllers/home');
+var tasks = require('../src/controllers/tasks');
+var cities = require('../src/controllers/cities');
 
 /**
  * Expose routes

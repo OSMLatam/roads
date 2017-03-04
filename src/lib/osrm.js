@@ -1,5 +1,5 @@
 
-var config = require('../config/config');
+var config = require('../../config/config');
 var request = require('superagent');
 
 exports.getRoute = function(city1, city2, done) {
