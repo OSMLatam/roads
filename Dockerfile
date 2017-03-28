@@ -1,5 +1,7 @@
 FROM node:7.7.1
 
+EXPOSE 3000
+
 # Setup env
 ENV APP_USER=node
 ENV HOME=/home/node
