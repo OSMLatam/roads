@@ -1,6 +1,7 @@
 
 var async = require('async');
 var mongoose = require('mongoose');
+mongoose.Promise = require('bluebird');
 var City = mongoose.model('City');
 var Link = mongoose.model('Link');
 var osrm = require('./osrm');
