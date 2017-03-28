@@ -16,8 +16,8 @@ var Link = mongoose.model('Link');
 exports.index = function(req, res){
   Link
     .find({status: {$ne: 'connected'}})
-    .populate('from to')
-    .sort({updatedAt: -1})
+    .populate('A B')
+    .sort({tortuosityAB: -1})
     .limit(50)
     .exec(function(err, links){
     	if (err) return res.render('500');

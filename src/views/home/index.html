@@ -2,7 +2,7 @@
 {% extends '../layouts/default.html' %}
 
 {% block main %}
-  <h1>Mapazonia Roads</h1>
+  <h1>OSM Roads</h1>
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,10 @@
     <table class="u-full-width">
       <thead>
         <tr>
-          <th>Route</th>
+          <th>A</th>
+          <th>B</th>
+          <th>A 〰 B</th>
+          <th>B 〰 A</th>
           <th>Status</th>
           <th>Verified at</th>
         </tr>
@@ -20,11 +23,19 @@
         {% for link in links %}
           <tr>
             <td>
-              <a href="{{link.from.getViewInOSRMLink(link.to)}}" target='_blank'>
-                {{ link.from.name }} ({{ link.from.uf }}) to {{ link.to.name }} ({{ link.to.uf }})
+              {{ link.A.name }} ({{ link.A.uf }})
+            </td>
+            <td>
+              {{ link.B.name }} ({{ link.B.uf }})
+            </td>
+            <td>
+              <a href="{{link.A.getViewInOSRMLink(link.B)}}" target='_blank'>
+                {{ link.tortuosityAB }} %
               </a>
             </td>
-            <td>{{ link.status }}</td>
+            <td>
+              {{ link.tortuosityBA }} %
+            </td>
             <td>{{ moment(link.updatedAt).fromNow() }}</td>
             <h3>
           </tr>

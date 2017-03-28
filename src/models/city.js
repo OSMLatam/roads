@@ -30,7 +30,7 @@ var CitySchema = new Schema({
 	isCapital: {type: Boolean, defaut: false},
 	nearCities: [{
 		id: { type: Schema.ObjectId, ref: 'City'},
-		straightDistance: {type: Number, default: 0},
+		distance: {type: Number, default: 0},
 		routeForwardDistanceRatio: {type: Number, default: 0},
 		routeBackwardDistanceRatio: {type: Number, default: 0}
 	}],
@@ -77,7 +77,7 @@ CitySchema.methods = {
 	getPercentualInexistent: function(){
 		return this.stats.totalInexistent / this.stats.totalChecked * 100
 	},
-	getStraightDistanceTo: function(city){
+	getdistanceTo: function(city){
 		return geolib.getDistance({
 			latitude: this.getLon(),
 			longitude: this.getLat()
@@ -108,7 +108,7 @@ CitySchema.methods = {
 			}
 		})
 	},
-	checkConnectionTo: function(targetCity, straightDistance, doneCheckConnectionTo){
+	checkConnectionTo: function(targetCity, distance, doneCheckConnectionTo){
 		var self = this
 
 	 // fetch foward route
@@ -134,9 +134,9 @@ CitySchema.methods = {
 
 				route = {
 					id: targetCity,
-					straightDistance: straightDistance,
-					routeForwardDistanceRatio: routeABDistance > 0 ? (routeABDistance / straightDistance - 1) * 100 : 0,
-					routeBackwardDistanceRatio: routeABDistance > 0 ? (routeBADistance / straightDistance - 1) * 100 : 0
+					distance: distance,
+					routeForwardDistanceRatio: routeABDistance > 0 ? (routeABDistance / distance - 1) * 100 : 0,
+					routeBackwardDistanceRatio: routeABDistance > 0 ? (routeBADistance / distance - 1) * 100 : 0
 				}
 				self.nearCities.push(route)
 

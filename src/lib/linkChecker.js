@@ -34,8 +34,8 @@ function generateCityLinks(city, done) {
 		async.eachSeries(nearest, function(result, doneEach){
 			Link.findBetween(city, result.id, function(err, link){
 				if (err) return doneEach(err);
-				if (!link) var link = new Link({from: city, to: result.id});
-				link.straightDistance = result.distance;
+				if (!link) var link = new Link({A: city, B: result.id});
+				link.distance = result.distance;
 				link.save(doneEach);
 			});
 		}, done)
@@ -53,14 +53,14 @@ exports.refreshLinks = function (app, done){
 function updateLink(done) {
 	Link
 		.findOne({})
-		.populate('from')
-		.populate('to')
+		.populate('A')
+		.populate('B')
 		.sort({updatedAt: 1})
 		.exec(function(err, link){
 			if (err) return done(err);
 
 			if (link) {
-				osrm.getRoute(link.from, link.to, function(err, result){
+				osrm.getRoute(link.A, link.B, function(err, result){
 
 					var route;
 					if (result.routes) {
@@ -69,10 +69,8 @@ function updateLink(done) {
 
 					if (err && (result.code == 'NoRoute')) {
 						link.status = 'broken';
-					} else if (route.distance / 1000 > (link.straightDistance * 2)) {
-						link.status = 'tortuous';
 					} else {
-						link.status = 'connected';
+						link.tortuosityAB = Math.round(((route.distance / 1000 ) / link.distance - 1) * 1000) / 10;
 					}
 
 					link.updatedAt = new Date();

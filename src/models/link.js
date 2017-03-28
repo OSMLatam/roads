@@ -3,11 +3,11 @@ var Schema = mongoose.Schema;
 
 
 var LinkSchema = new Schema({
-	from: { type: Schema.ObjectId, ref: 'City'},
-	to: { type: Schema.ObjectId, ref: 'City'},
-	straightDistance: {type: Number, default: 0},
-	forwardDistance: {type: Number, default: 0},
-	backwardDistance: {type: Number, default: 0},
+	A: { type: Schema.ObjectId, ref: 'City'},
+	B: { type: Schema.ObjectId, ref: 'City'},
+	distance: {type: Number, default: 0},
+	tortuosityAB: {type: Number, default: 0},
+	tortuosityBA: {type: Number, default: 0},
 	status: {type: String, enum: ['connected', 'tortuous', 'broken']},
 	updatedAt: { type: Date, default: Date.now}
 });
