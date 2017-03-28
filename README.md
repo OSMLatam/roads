@@ -1,24 +1,20 @@
-# Mapazonia Roads
+**OSM Roads**
 
-A platform to monitor routability on OpenStreetMap between cities in the Amazon region.
+> A platform to monitor routability between cities using OpenStreetMap data.
 
-## Install
+# Development setup
 
 Install dependencies:
 
-* node 0.10.x
-* npm 1.2.x
-* [OSRM - Open Source Routing Machine](https://github.com/Project-OSRM/osrm-backend/wiki/Building%20OSRM)
+- [Docker](https://www.docker.com/)
 
-Clone this repository locally:
+## Run server
 
-    git clone https://github.com/mapazonia/roads
-
-Change to repository directory and install packages:
-
+    git clone <this repository git url>
     cd roads
-    npm install
+    docker-compose up
 
-Run the server:
+## Shell access
 
-    npm start
+    $ docker ps
+    $ docker exec -it [container name or id] /bin/bash

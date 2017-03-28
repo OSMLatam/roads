@@ -41,6 +41,11 @@ logger
   .add(logger.transports.File, { filename: 'connection_checker.log' })
   .remove(logger.transports.Console);
 
+// catch unhandled global errors
+process.on('unhandledRejection', function(reason, p) {
+  console.log("Unhandled Rejection at: Promise ", p, " reason: ", reason);
+});
+
 // Start the app by listening on <port>
 var port = process.env.PORT || 3000
 app.listen(port)
