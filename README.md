@@ -15,10 +15,10 @@ Clone locally:
     
     git clone <this repository git url> 
     
-Start MongoDB:    
+Start MongoDB container:
     
     cd roads
-    docker-compose up # start database
+    docker-compose up
 
 Open a new terminal and run:
     
