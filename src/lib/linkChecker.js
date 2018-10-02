@@ -1,4 +1,4 @@
-
+const config = require('../../config/config');
 var async = require('async');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
@@ -59,17 +59,24 @@ function updateLink(done) {
 		.exec(function(err, link){
 			if (err) return done(err);
 
+			
+
 			if (link) {
 				osrm.getRoute(link.A, link.B, function(err, result){
 
 					var route;
 					if (result.routes) {
 						route = result.routes[0].legs[0];
+					} else {
+						return;
 					}
+
+					console.log({result});
 
 					if (err && (result.code == 'NoRoute')) {
 						link.status = 'broken';
 					} else {
+						console.log(route);
 						link.tortuosityAB = Math.round(((route.distance / 1000 ) / link.distance - 1) * 1000) / 10;
 					}
 
@@ -96,5 +103,5 @@ exports.init = function (app, done){
 	})
 
 	// start update link job
-	setInterval(updateLink, 3000);
+	setInterval(updateLink, config.osrmInterval);
 }
