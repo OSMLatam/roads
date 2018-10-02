@@ -2,14 +2,3 @@ db:
   image: mongo:3.4
   ports:
     - 27017:27017
-roads:
-  build: .
-  links:
-    - db
-  command: nodemon src/
-  environment:
-    NODE_ENV: development
-  volumes:
-    - .:/home/node/roads
-  ports:
-    - "3000:3000"

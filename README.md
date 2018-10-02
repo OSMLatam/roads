@@ -1,20 +1,30 @@
-**OSM Roads**
+**This is a work in progress, please contact the [maintainer](https://github.com/vgeorge) for further info.**
 
-> A platform to monitor routability between cities using OpenStreetMap data.
+# OSM Route Checker
 
-# Development setup
+A platform to monitor routes between cities in OpenStreetMap. 
+
+## Development
 
 Install dependencies:
 
 - [Docker](https://www.docker.com/)
+- [Node.js](https://nodejs.org)
 
-## Run server
-
-    git clone <this repository git url>
+Clone locally:
+    
+    git clone <this repository git url> 
+    
+Start MongoDB:    
+    
     cd roads
-    docker-compose up
+    docker-compose up # start database
 
-## Shell access
+Open a new terminal and run:
+    
+    yarn
+    yarn start
 
-    $ docker ps
-    $ docker exec -it [container name or id] /bin/bash
+## License
+
+MIT
