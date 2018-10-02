@@ -54,7 +54,7 @@ console.log('Express app started on port '+port)
 // When mongoose is ready
 var linkChecker = require('./lib/linkChecker');
 mongoose.connection.on('connected', function(){
-  linkChecker.init();
+  // linkChecker.init();
 });
 
 // expose app

@@ -13,7 +13,7 @@ var bodyParser = require('body-parser');
 var methodOverride = require('method-override');
 var csrf = require('csurf');
 var multer = require('multer');
-var swig = require('swig');
+const pug = require('pug');
 
 var mongoStore = require('connect-mongo')(session);
 var flash = require('connect-flash');
@@ -56,17 +56,10 @@ module.exports = function (app, passport) {
   // Logging middleware
   if (env !== 'test') app.use(morgan(log));
 
-  // Swig templating engine settings
-  if (env === 'development' || env === 'test') {
-    swig.setDefaults({
-      cache: false
-    });
-  }
-
   // set views path, template engine and default layout
-  app.engine('html', swig.renderFile);
+  app.engine('pug', require('pug').__express);
   app.set('views', config.root + '/src/views');
-  app.set('view engine', 'html');
+  app.set('view engine', 'pug');
 
   // expose package.json to views
   app.use(function (req, res, next) {

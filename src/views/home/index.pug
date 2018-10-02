@@ -1,0 +1,31 @@
+extends ../layouts/default
+
+block content
+  if (links.length) 
+
+    table(class="u-full-width")
+      thead
+        tr
+          th A
+          th B
+          th A → B
+          th B ← A
+          th Verified at
+      tbody
+        each link in links
+          tr
+            td #{ link.A.name } (#{ link.A.uf })
+            td #{ link.B.name } (#{ link.B.uf })
+            td 
+              a(href=link.A.getViewInOSRMLink(link.B),target='_blank')
+                if link.tortuosityAB > 0 
+                  | 👍
+                else
+                  | ❌
+            td 
+              a(href=link.B.getViewInOSRMLink(link.A),target='_blank')
+                if link.tortuosityBA > 0 
+                  | 👍
+                else
+                  | ❌
+            td #{ moment(link.updatedAt).fromNow() }
