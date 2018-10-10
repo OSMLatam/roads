@@ -1,4 +1,4 @@
-const config = require('../../config/config');
+const config = require('../../config');
 var async = require('async');
 var mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');

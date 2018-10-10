@@ -2,6 +2,7 @@ var _ = require('underscore');
 var path = require('path');
 
 var defaults = {
+  nearestCitiesCount: 5,
   osrmInterval: 10000,
   root: path.normalize(__dirname + '/..'),
   osrmUrl: 'http://router.project-osrm.org'
