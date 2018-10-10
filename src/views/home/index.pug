@@ -1,8 +1,16 @@
 extends ../layouts/default
 
 block content
-  if (links.length) 
 
+  h1 Admin tasks:
+    ul
+      li
+        a(href="admin/generate-routes", target="_blank") Generate routes
+
+
+  h1 Routes status
+
+  if (links.length) 
     table(class="u-full-width")
       thead
         tr
